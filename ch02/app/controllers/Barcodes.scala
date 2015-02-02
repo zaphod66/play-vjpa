@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, Controller}
 
 object Barcodes extends Controller {
-  val imageResolution = 144
+  val imageResolution = 200
   
   def barcode(ean: Long) = Action {
     import java.lang.IllegalArgumentException
