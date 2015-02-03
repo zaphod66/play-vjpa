@@ -1,9 +1,9 @@
 @(product: Product)(implicit flash: Flash, lang: Lang)
 
-@main(Messages("products.details", product.name)) {
+@main(Messages("product.details", product.name)) {
   <h2>
     @tags.barcode(product.ean)
-    @Messages("products.details", product.name)
+    @Messages("product.details", product.name)
   </h2>
 
   <dl class="dl-horizontal">
