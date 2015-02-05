@@ -20,4 +20,15 @@ object Product {
   def add(product: Product) {
     products = products + product
   }
+  
+  def update(product: Product) {
+    val oldProduct = findByEan(product.ean)
+    
+    products = oldProduct match {
+      case Some(p) => products - p
+      case None    => products
+    }
+
+    products = products + product
+  }
 }

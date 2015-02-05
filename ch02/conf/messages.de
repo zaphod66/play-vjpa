@@ -4,13 +4,17 @@ ean = EAN
 name = Name
 description = Beschreibung
 
+product.form = Produktdetails
 product.details = Produkt: {0}
-
-products.form = Produktdetails
-products.new  = (neu)
-products.new.command = Neu
-products.new.submit  = Senden
-products.new.success = Product {0} erfolgreich hinzugefügt.
+product.new  = (neu)
+product.new.command = Neu
+product.new.submit  = Speichern
+product.new.success = Product {0} erfolgreich hinzugefügt.
+product.edit.command = Ändern
+product.edit.submit = Speichern
+product.edit.success = Produkt {0} erfolgreich geändert.
 
 validation.errors = Bitte die Fehler im Formular korrigieren.
 validation.ean.duplicate = Es existiert bereits ein Produkt mit diesem EAN code.
+validation.ean.notexist = Ein Product mit diesem EAN code konnte nicht gefunden werden.
+validation.ean.checksum = Fehler in der Checksumme für diesen EAN code.
