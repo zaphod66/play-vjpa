@@ -31,4 +31,8 @@ object Product {
 
     products = products + product
   }
+  
+  def delete(product: Product) {
+    products = products - product
+  }
 }

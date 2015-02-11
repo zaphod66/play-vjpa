@@ -76,6 +76,14 @@ object Products extends Controller {
     }
   }
   
+  def delete(ean: Long) = Action { implicit request =>
+    val p = Product.findByEan(ean)
+
+//  p.map { x => Product.delete(x) }
+
+    Ok(views.html.products.deleteProduct(p.get))
+  }
+  
   private def eanDoesntExist(ean: Long): Boolean = Product.findByEan(ean).isEmpty
   
   private def makeProductForm(error: String, constraint: (Long) => Boolean) = Form(
