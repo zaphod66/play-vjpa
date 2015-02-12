@@ -75,13 +75,23 @@ object Products extends Controller {
       )
     }
   }
-  
+
   def delete(ean: Long) = Action { implicit request =>
     val p = Product.findByEan(ean)
-
-//  p.map { x => Product.delete(x) }
-
+    
     Ok(views.html.products.deleteProduct(p.get))
+  }
+  
+  def deleted(ean: Long) = Action { implicit request =>
+    val p = Product.findByEan(ean)
+
+    p.map { x => Product.delete(x) }
+
+    p match {
+      case Some(p) => Ok(views.html.products.deletedProduct(p.name))
+      case None    => Redirect(routes.Application.index)
+    }
+    
   }
   
   private def eanDoesntExist(ean: Long): Boolean = Product.findByEan(ean).isEmpty

@@ -9,12 +9,12 @@
 
   <dl class="dl-horizontal">
     <dt>
-      <p><a href="@controllers.routes.Products.edit(product.ean)" class="btn">
+      <p><a href="@controllers.routes.Products.deleted(product.ean)" class="btn">
       <i class="icon-ok"></i>@Messages("product.delete.ok")</a></p>
     </dt>
     <dd>
-      <p><a href="@controllers.routes.Products.edit(product.ean)" class="btn">
-      <i class="icon-ban"></i>@Messages("product.delete.no")</a></p>
+      <p><a href="@controllers.routes.Application.index" class="btn">
+      <i class="icon-remove"></i>@Messages("product.delete.no")</a></p>
     </dd>
   </dl>
 }

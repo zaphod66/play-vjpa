@@ -1,0 +1,14 @@
+@(name: String)(implicit flash: Flash, lang: Lang)
+
+@main(Messages("product.details", name)) {
+  <h2>
+    @Messages("product.details", name)  
+  </h2>
+  
+  <p>Product <b>@name</b> deleted.</p>
+
+  <p>
+    <a href="@controllers.routes.Application.index" class="btn">
+    <i class="icon-ok"></i>@Messages("product.delete.ok")</a>
+  </p>
+}

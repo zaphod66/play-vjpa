@@ -11,6 +11,7 @@ GET     /products/:ean              controllers.Products.show(ean: Long)
 POST    /products/:ean              controllers.Products.update(ean: Long)
 GET     /products/:ean/edit         controllers.Products.edit(ean: Long)
 GET     /products/:ean/delete		controllers.Products.delete(ean: Long)
+GET     /products/deleted/:ean      controllers.Products.deleted(ean: Long)
 
 GET     /barcode/:ean               controllers.Barcodes.barcode(ean: Long)
 
