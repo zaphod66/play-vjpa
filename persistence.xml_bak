@@ -1,8 +1,0 @@
-<persistence version="2.0">
-    <persistence-unit name="genericUnit" transaction-type="RESOURCE_LOCAL">
-        <properties>
-            <property name="versant.connectionURL" value="jpatest1@towel-ubvm" />
-            <property name="versant.genericAccess" value="true" />
-        </properties>
-    </persistence-unit>
-</persistence>
