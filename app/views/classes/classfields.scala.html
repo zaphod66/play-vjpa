@@ -1,0 +1,17 @@
+@(clsName: String, fldNames: Seq[String])(implicit flash: Flash, lang: Lang)
+
+@main(Messages("appication.names")) {
+  <h2>
+  @Messages("fields") @clsName
+  </h2>
+  <h3>
+  @Messages("fieldnames")
+  </h3>
+  <dl>
+    @for(name <- fldNames) {
+      <dt>
+        @name
+      </dt>
+    }
+  </dl>
+}

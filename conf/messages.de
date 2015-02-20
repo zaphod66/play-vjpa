@@ -6,3 +6,5 @@ databases = Datenbank(en)
 
 classes = Klassen
 classnames = Klassennamen
+fields = List of Fields for class
+fieldnames = Field names

@@ -2,12 +2,12 @@ package controllers
 
 import play.api.mvc.{Action, Controller, Flash}
 import play.api.i18n.Messages
-import models.VJPAClasses
+import models.VjpaDAO
 
 object Classes extends Controller {
   def listNames = Action { implicit request =>
-    val clsNames = VJPAClasses.allClassNames
-    val dbsNames = VJPAClasses.allDBNames
+    val clsNames = VjpaDAO.allClassNames
+    val dbsNames = VjpaDAO.allDBNames
     
     clsNames match {
       case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))
@@ -15,7 +15,9 @@ object Classes extends Controller {
     }
   }
   
-  def showClass(name: String) = Action { request =>
-    Ok("showClass: " + name)
+  def showClass(clsName: String) = Action { implicit request =>
+    val fldNames = VjpaDAO.fieldNamesforClass(clsName)
+    
+    Ok(views.html.classes.classfields(clsName,fldNames))
   }
 }
