@@ -2,16 +2,17 @@
 
 @main(Messages("application.name")) {
   <h2>
-  Classes
+  @Messages("classes")
   </h2>
-  <h3>Database(s)</h3>
-  @for(name <- dbsNames) {
-  	<dt>
-  	  @name
-  	</dt>
-  }
-  <br>
-  <h3>Class names</h3>
+  <h3>@Messages("databases")</h3>
+  <dl class="databases">
+    @for(name <- dbsNames) {
+      <dt>
+  	    @name
+  	  </dt>
+    }
+  </dl>
+  <h3>@Messages("classnames")</h3>
   <dl class="classnames">
     @for(name <- clsNames) {
       <dt>

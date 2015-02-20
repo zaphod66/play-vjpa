@@ -1,23 +1,8 @@
 application.name = V/JPA Play
 
-ean = EAN
 name = Name
 description = Beschreibung
+databases = Datenbank(en)
 
-product.form = Produktdetails
-product.details = Produkt: {0}
-product.new  = (neu)
-product.new.command = Neu
-product.new.submit  = Speichern
-product.new.success = Product {0} erfolgreich hinzugefügt.
-product.edit.command = Ändern
-product.edit.submit = Speichern
-product.edit.success = Produkt {0} erfolgreich geändert.
-product.delete.command = Entfernen
-product.delete.ok = Ok
-product.delete.no = Nein
-
-validation.errors = Bitte die Fehler im Formular korrigieren.
-validation.ean.duplicate = Es existiert bereits ein Produkt mit diesem EAN code.
-validation.ean.notexist = Ein Product mit diesem EAN code konnte nicht gefunden werden.
-validation.ean.checksum = Fehler in der Checksumme für diesen EAN code.
+classes = Klassen
+classnames = Klassennamen
