@@ -15,7 +15,7 @@ object VjpaDAO {
           """<persistence version="2.0">
                  <persistence-unit name="genericUnit" transaction-type="RESOURCE_LOCAL">
                    <properties>
-                     <property name="versant.connectionURL" value="jpatest1@towel-ubvm|jpatest2@towel-ubvm|jpatest3@towel-ubvm"/>
+                     <property name="versant.connectionURL" value="""" + connectionURL + """"/>
                      <property name="versant.genericAccess" value="true" />
                    </properties>
                  </persistence-unit>
@@ -66,25 +66,49 @@ object VjpaDAO {
     }
   }
   
-  def fields(clazz: DatabaseClass): Seq[DatabaseField] = {
-    if (clazz == null)
-      List[DatabaseField]()
-    else
-      clazz.getDeclaredFields ++ fields(clazz.getSuperclass)
+  def getSimpleName(fullyQualifiedName: String): String = {
+    val sname = (fullyQualifiedName split('.')).lastOption
+    sname.getOrElse("")
+  }
+  
+  def getClass(clsName: String): Option[DatabaseClass] = {
+    val clazz = emf map { e => DatabaseClass.forName(clsName, e) }
+    
+    clazz match {
+      case Some(c) => {
+        if (c == null) {
+          val simpleName = getSimpleName(clsName)
+          emf map { e => DatabaseClass.forName(simpleName, e) }
+        } else {
+          clazz
+        }
+      }
+      case None => None
+    }
+  }
+  
+  def fields(clazz: Option[DatabaseClass]): Seq[DatabaseField] = {
+    clazz match {
+      case Some(c) => {
+        if (c == null)
+          Seq[DatabaseField]()
+        else
+          c.getDeclaredFields ++ fields(Some(c.getSuperclass))
+      }
+      case None    => Seq[DatabaseField]()
+    }
+//    if (clazz == null)
+//      List[DatabaseField]()
+//    else
+//      clazz.getDeclaredFields ++ fields(clazz.getSuperclass)
   }
   
   def fieldNamesforClass(clsName: String) = {
-    val simpleClsName = clsName split('.') lastOption
-    val clazz = emf map { e => DatabaseClass.forName(simpleClsName.get, e) }
+    val clazz    = getClass(clsName)
+    val flds     = fields(clazz)
+    val fldNames = flds map { fld => fld.getName }
     
-    clazz match {
-      case Some(c) => if (c != null) println("=>" + c.getName) else println("=> c is null")
-      case None    => println("NoClass found")
-    }
-    val flds   = clazz map { c => fields(c) }
-    val fldNames = flds map { flds => flds map { fld => fld.getName }}
-    
-    val tmp1 = flds.get
+    val tmp1 = flds
     val tmp2 = tmp1 headOption
     val tmp3 = tmp2 map { f => f.getName }
     val tmp4 = tmp2 map { f => f.getTypeName }
@@ -94,9 +118,6 @@ object VjpaDAO {
       case None    => println("f. getName failed")
     }
     
-    fldNames match {
-      case Some(fn) => fn.toSeq
-      case None     => Seq[String]()
-    }
+    fldNames
   }
 }

@@ -16,8 +16,9 @@ object Classes extends Controller {
   }
   
   def showClass(clsName: String) = Action { implicit request =>
-    val fldNames = VjpaDAO.fieldNamesforClass(clsName)
+    val clazz = VjpaDAO.getClass(clsName)
+    val flds = VjpaDAO.fields(clazz)
     
-    Ok(views.html.classes.classfields(clsName,fldNames))
+    Ok(views.html.classes.classfields(clazz.get, flds))
   }
 }

@@ -1,17 +1,44 @@
-@(clsName: String, fldNames: Seq[String])(implicit flash: Flash, lang: Lang)
+@import com.versant.jpa.generic.{ DatabaseClass, DatabaseField }
+@(cls: DatabaseClass, flds: Seq[DatabaseField])(implicit flash: Flash, lang: Lang)
 
-@main(Messages("appication.names")) {
-  <h2>
-  @Messages("fields") @clsName
-  </h2>
+@main(Messages("appication.name")) {
+  <h2>@Messages("fields") @(if (cls != null) cls.getFullyQualifiedName)</h2>
+  <p>Superclass: <b>
+    @{
+      if (cls != null) {
+        val scls = cls.getSuperclass
+    	  val sclsName = if (scls != null)
+  	          scls.getFullyQualifiedName
+  	        else
+  	          "no superclass"
+        sclsName
+      } else {
+        "no class"
+      }
+    }
+  </b></p>
+  <p> Subclasses:</br><b>
+    @{
+      if (cls != null) {
+        val sclss = cls.getSubclasses
+        val names = sclss map { scls => scls.getFullyQualifiedName }
+        if (names.size > 0)
+          names.mkString(", ")
+        else
+          "no subclasses"
+      } else {
+        "no class"
+      }
+    }
+  </b></p>
   <h3>
   @Messages("fieldnames")
   </h3>
-  <dl>
-    @for(name <- fldNames) {
-      <dt>
-        @name
-      </dt>
+  <p>@flds.size fields</p>
+  <dl class="dl-horizontal">
+    @for(fld <- flds) {
+      <dt>@fld.getName</dt>
+      <dd>@fld.getTypeName</dd>
     }
   </dl>
 }
