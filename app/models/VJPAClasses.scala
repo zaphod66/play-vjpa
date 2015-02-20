@@ -10,12 +10,12 @@ object VJPAClasses {
   var emf: Option[EntityManagerFactory] = None
   var em:  Option[EntityManager]        = None
     
-  def open(): Boolean = {
+  def open(connectionURL: String): Boolean = {
     val GEN_PERSISTENCE_XML = 
           """<persistence version="2.0">
                  <persistence-unit name="genericUnit" transaction-type="RESOURCE_LOCAL">
                    <properties>
-                     <property name="versant.connectionURL" value="jpatest1@towel-ubvm|jpatest2@towel-ubvm|jpatest3@towel-ubvm" />
+                     <property name="versant.connectionURL" value="jpatest1@towel-ubvm|jpatest2@towel-ubvm|jpatest3@towel-ubvm"/>
                      <property name="versant.genericAccess" value="true" />
                    </properties>
                  </persistence-unit>
@@ -26,6 +26,10 @@ object VJPAClasses {
     
     emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
     em  = emf map { e => e.createEntityManager }
+    
+    val names = allClassNames
+
+//  names map { arr => arr foreach { n => println(n) }}
     
     true
   }
@@ -38,5 +42,27 @@ object VJPAClasses {
     emf = None
     
     true
+  }
+  
+  import com.versant.jpa.generic._
+  
+  def allClassNames = {
+    val classes = emf map { e => DatabaseClass.getAllClasses(e) }
+    val names   = classes map { arr => arr map { c => c.getFullyQualifiedName } }
+    
+    names
+  }
+  
+  def allDBNames = {
+    emf match {
+      case Some(e) => {
+        val vemf = e.asInstanceOf[VersantEntityManagerFactory]
+        val dbs  = vemf.getAllDatabases
+        val dbNames = dbs.map { db => db.getName }
+        
+        dbNames.toSeq
+      }
+      case None    => Seq[String]()
+    }
   }
 }

@@ -1,0 +1,22 @@
+@(dbsNames: Seq[String], clsNames: Seq[String])(implicit flash: Flash, lang: Lang)
+
+@main(Messages("application.name")) {
+  <h2>
+  Classes
+  </h2>
+  <h3>Database(s)</h3>
+  @for(name <- dbsNames) {
+  	<dt>
+  	  @name
+  	</dt>
+  }
+  <br>
+  <h3>Class names</h3>
+  <dl class="classnames">
+    @for(name <- clsNames) {
+      <dt>
+        <a href="@controllers.routes.Classes.showClass(name)">@name</a>
+      </dt>
+    }
+  </dl>
+}
