@@ -19,6 +19,6 @@ object Classes extends Controller {
     val clazz = VjpaDAO.getClass(clsName)
     val flds = VjpaDAO.fields(clazz)
     
-    Ok(views.html.classes.classfields(clazz.get, flds))
+    Ok(views.html.classes.classdetails(clazz.get, flds))
   }
 }

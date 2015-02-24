@@ -1,0 +1,12 @@
+@(connectionForm: Form[ConnectionURL])(implicit flash: Flash, lang: Lang)
+@import helper._
+@import helper.twitterBootstrap._
+
+@main(Messages("application.name")) {
+  @helper.form(action = routes.VjpaDatabase.open) {
+    <fieldset>
+      @helper.inputText(connectionForm("url"))
+    </fieldset>
+    <p><input type="submit" class="btn primary" value='@Messages("connection.open")'></p>
+  }
+}

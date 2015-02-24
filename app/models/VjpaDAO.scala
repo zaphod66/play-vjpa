@@ -1,5 +1,6 @@
 package models
 
+import scala.language.postfixOps
 import com.versant.jpa._
 
 import javax.persistence._
@@ -9,7 +10,8 @@ object VjpaDAO {
   
   var emf: Option[EntityManagerFactory] = None
   var em:  Option[EntityManager]        = None
-    
+  var url: Option[String]               = None
+
   def open(connectionURL: String): Boolean = {
     val GEN_PERSISTENCE_XML = 
           """<persistence version="2.0">
@@ -23,23 +25,30 @@ object VjpaDAO {
 
     
     val props = Map("versant.persistence.xml" -> GEN_PERSISTENCE_XML)
-    
+
+    close
+
     emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
     em  = emf map { e => e.createEntityManager }
+    url = Some(connectionURL)
     
     val names = allClassNames
 
-//  names map { arr => arr foreach { n => println(n) }}
-    
-    true
+    emf match {
+      case Some(_) => true
+      case None    => false
+    }
   }
   
   def close(): Boolean = {
+    println(s"Closing...")
+    
     em map { e => e.close }
     emf map { e => e.close }
 
     em  = None
     emf = None
+    url = None
     
     true
   }
@@ -97,10 +106,6 @@ object VjpaDAO {
       }
       case None    => Seq[DatabaseField]()
     }
-//    if (clazz == null)
-//      List[DatabaseField]()
-//    else
-//      clazz.getDeclaredFields ++ fields(clazz.getSuperclass)
   }
   
   def fieldNamesforClass(clsName: String) = {

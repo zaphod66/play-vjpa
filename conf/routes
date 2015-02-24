@@ -4,6 +4,10 @@
 
 GET     /                           controllers.Application.index
 
+GET     /databases/requestURL       controllers.VjpaDatabase.requestURL
+GET     /databases/open             controllers.VjpaDatabase.open
+GET     /databases/close            controllers.VjpaDatabase.close
+
 GET     /classes                    controllers.Classes.listNames
 GET     /classes/:name              controllers.Classes.showClass(name: String)
 

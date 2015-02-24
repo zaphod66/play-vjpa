@@ -3,6 +3,8 @@ application.name = V/JPA Play
 name = Name
 description = Beschreibung
 databases = Datenbank(en)
+connection.url = Datenbank URL
+connection.open = Verbinden
 
 classes = Klassen
 classnames = Klassennamen
