@@ -41,10 +41,8 @@ object VjpaDAO {
   }
   
   def close(): Boolean = {
-    println(s"Closing...")
-    
     em map { e => e.close }
-    emf map { e => e.close }
+    emf map { e => { e.close; println("closing...") } }
 
     em  = None
     emf = None
@@ -124,5 +122,9 @@ object VjpaDAO {
     }
     
     fldNames
+  }
+  
+  def isInUse: Boolean = {
+    emf.isDefined
   }
 }

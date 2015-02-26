@@ -27,7 +27,8 @@ object VjpaDatabase extends Controller {
     val connected = VjpaDAO.open(connectionURL)
     if (connected) {
       println("connected to:" + connectionURL)
-      Redirect(routes.Classes.listNames())
+//    Redirect(routes.Classes.listNames())
+      Redirect(routes.VjpaDatabase.connected)
     } else {
       Redirect(routes.Application.index())
     }
@@ -37,6 +38,12 @@ object VjpaDatabase extends Controller {
     VjpaDAO.close()
     
     Redirect(routes.Application.index())
+  }
+  
+  def connected = Action { implicit request =>
+    val dbsNames = VjpaDAO.allDBNames
+    
+    Ok(views.html.openDatabase(dbsNames))
   }
   
   val connectionMapping = mapping(

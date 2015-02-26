@@ -1,0 +1,23 @@
+@(dbsNames: Seq[String])(implicit flash: Flash, lang: Lang)
+
+@main(Messages("application.name")) {
+  <h2>@Messages("databases")</h2>
+  <dl class="databases">
+    @for(name <- dbsNames) {
+      <dt>
+  	    @name
+  	  </dt>
+    }
+  </dl>
+  
+  
+  <dl class="dl-horizontal">
+    <dt>
+      <p><a href="@routes.Classes.listAllNames" class="btn">@Messages("connection.classlist")</a></p>
+    </dt>
+    <dd>
+      <p><a href="@routes.VjpaDatabase.close" class="btn">@Messages("connection.close")</a></p>
+    </dd>
+  </dl>
+  
+}

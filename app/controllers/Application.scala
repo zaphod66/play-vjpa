@@ -1,12 +1,15 @@
 package controllers
 
 import play.api.mvc.{Action, Controller}
+import models.VjpaDAO
 
 object Application extends Controller {
 
   def index = Action {
-  //Redirect(routes.Classes.listNames())
-    Redirect(routes.VjpaDatabase.requestURL)
+    if (VjpaDAO.isInUse)
+      Redirect(routes.VjpaDatabase.connected)
+    else
+      Redirect(routes.VjpaDatabase.requestURL)
   }
 
 }

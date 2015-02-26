@@ -6,11 +6,11 @@ GET     /                           controllers.Application.index
 
 GET     /databases/requestURL       controllers.VjpaDatabase.requestURL
 GET     /databases/open             controllers.VjpaDatabase.open
+GET     /databases/connected        controllers.VjpaDatabase.connected
 GET     /databases/close            controllers.VjpaDatabase.close
 
-GET     /classes                    controllers.Classes.listNames
+GET     /classes                    controllers.Classes.listAllNames
 GET     /classes/:name              controllers.Classes.showClass(name: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
-

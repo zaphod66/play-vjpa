@@ -5,6 +5,9 @@ description = Description
 databases = Database(s)
 connection.url = Database URL
 connection.open = Open
+connection.close = Close
+connection.classlist = List of classes
+connection.queryclass = Query classes
 
 classes = List of classes
 classnames = Class names

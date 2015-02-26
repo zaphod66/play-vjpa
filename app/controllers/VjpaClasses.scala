@@ -5,7 +5,7 @@ import play.api.i18n.Messages
 import models.VjpaDAO
 
 object Classes extends Controller {
-  def listNames = Action { implicit request =>
+  def listNames(clsNames: Option[Array[String]]) = Action { implicit request =>
     val clsNames = VjpaDAO.allClassNames
     val dbsNames = VjpaDAO.allDBNames
     
@@ -20,5 +20,11 @@ object Classes extends Controller {
     val flds = VjpaDAO.fields(clazz)
     
     Ok(views.html.classes.classdetails(clazz.get, flds))
+  }
+  
+  def listAllNames = {
+    val clsNames = VjpaDAO.allClassNames
+    
+    listNames(clsNames)
   }
 }
