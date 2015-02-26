@@ -447,11 +447,11 @@ dd {
 .dl-horizontal dt {
   float: left;
   clear: left;
-  width: 120px;
+  width: 240px;
   text-align: right;
 }
 .dl-horizontal dd {
-  margin-left: 130px;
+  margin-left: 250px;
 }
 hr {
   margin: 18px 0;
