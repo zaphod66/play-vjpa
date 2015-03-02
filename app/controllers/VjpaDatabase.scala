@@ -27,7 +27,6 @@ object VjpaDatabase extends Controller {
     val connected = VjpaDAO.open(connectionURL)
     if (connected) {
       println("connected to:" + connectionURL)
-//    Redirect(routes.Classes.listNames())
       Redirect(routes.VjpaDatabase.connected)
     } else {
       Redirect(routes.Application.index())

@@ -105,6 +105,39 @@ object VjpaDAO {
       case None    => Seq[DatabaseField]()
     }
   }
+
+  def getAllInstances(clsName: String): Seq[DatabaseObject] = {
+    val dbClass = getClass(clsName)
+    
+    var q: Option[Query] = None
+    
+    try {
+      q  = em map { _.createQuery(s"SELECT x FROM $clsName x") }
+    } catch {
+      case e: IllegalArgumentException => {
+        val simpleName = getSimpleName(clsName)
+        
+        q = em map { _.createQuery(s"SELECT x FROM $simpleName x") }
+      }
+    }
+    
+    val query  = q
+    val result = query map { _.getResultList }
+    val buffer = result map { _.asScala }
+    val seqany = buffer map { _.toSeq }
+    val seqobj = seqany map { sa => sa map { _.asInstanceOf[DatabaseObject] } }
+
+    seqobj.getOrElse(Seq[DatabaseObject]())
+  } 
+  
+  def getInstance(loid: Long): Option[DatabaseObject] = {
+    val vem = em  map { _.asInstanceOf[VersantEntityManager] }
+    val lst = vem map { _.find(List(loid).asJava) }
+    val obj = lst map { l => if (l.size >= 1) l.get(0) }
+    val dbo = obj map { _.asInstanceOf[DatabaseObject] }
+    
+    dbo
+  }
   
   def fieldNamesforClass(clsName: String) = {
     val clazz    = getClass(clsName)

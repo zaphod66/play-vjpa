@@ -6,7 +6,6 @@ import models.VjpaDAO
 
 object Classes extends Controller {
   def listNames(clsNames: Option[Array[String]]) = Action { implicit request =>
-    val clsNames = VjpaDAO.allClassNames
     val dbsNames = VjpaDAO.allDBNames
     
     clsNames match {
@@ -26,5 +25,23 @@ object Classes extends Controller {
     val clsNames = VjpaDAO.allClassNames
     
     listNames(clsNames)
+  }
+  
+  def allInstances(clsName: String) = Action { implicit request =>
+    val instances = VjpaDAO.getAllInstances(clsName)
+    
+    Ok(views.html.classes.classinstances(instances))
+  }
+  
+  def showInstance(loid: Long) = Action { implicit request =>
+    val obj = VjpaDAO.getInstance(loid)
+    
+    obj match {
+      case Some(o) => {
+        val flds = VjpaDAO.fields(Some(o.getType))
+        Ok(views.html.classes.classinstance(o, flds))
+      }
+      case None    => NotFound
+    }
   }
 }
