@@ -1,17 +1,16 @@
-@import com.versant.jpa.generic.{ DatabaseObject, DatabaseField }
 @import com.versant.jpa.LoidUtil
 
-@(instances: Seq[DatabaseObject])(implicit flash: Flash, lang: Lang)
+@(clsName: String, instances: Seq[Long])(implicit flash: Flash, lang: Lang)
 
 @main(Messages("application.name")) {
-  <h2>@Messages("instances")</h2>
+  <h2>@Messages("instances") @clsName</h2>
   <p>@Messages("noInstances") @instances.length</p>
   
   <ol>
     @for(inst <- instances) {
       <li>
-        <a href="@controllers.routes.Classes.showInstance(inst.getLoid)">
-          @LoidUtil.convertLongToString(inst.getLoid)
+        <a href="@controllers.routes.Classes.showInstance(inst)">
+          @LoidUtil.convertLongToString(inst)
         </a>
       </li>
     }

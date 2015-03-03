@@ -106,28 +106,28 @@ object VjpaDAO {
     }
   }
 
-  def getAllInstances(clsName: String): Seq[DatabaseObject] = {
+  def getAllInstances(clsName: String): Seq[Long] = {
     val dbClass = getClass(clsName)
     
-    var q: Option[Query] = None
+    var query: Option[Query] = None
     
     try {
-      q  = em map { _.createQuery(s"SELECT x FROM $clsName x") }
+      query  = em map { _.createQuery(s"SELECT x FROM $clsName x") }
     } catch {
       case e: IllegalArgumentException => {
         val simpleName = getSimpleName(clsName)
         
-        q = em map { _.createQuery(s"SELECT x FROM $simpleName x") }
+        query = em map { _.createQuery(s"SELECT x FROM $simpleName x") }
       }
     }
     
-    val query  = q
-    val result = query map { _.getResultList }
-    val buffer = result map { _.asScala }
+    val result = query  map { _.getResultList }
+    val loids  = result map { LoidUtil.getLoids(_) }
+    val buffer = loids  map { _.asScala }
     val seqany = buffer map { _.toSeq }
-    val seqobj = seqany map { sa => sa map { _.asInstanceOf[DatabaseObject] } }
+    val slong  = seqany map { sa => sa map { _.asInstanceOf[Long] } }
 
-    seqobj.getOrElse(Seq[DatabaseObject]())
+    slong.getOrElse(Seq[Long]())
   } 
   
   def getInstance(loid: Long): Option[DatabaseObject] = {

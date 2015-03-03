@@ -29,8 +29,8 @@ object Classes extends Controller {
   
   def allInstances(clsName: String) = Action { implicit request =>
     val instances = VjpaDAO.getAllInstances(clsName)
-    
-    Ok(views.html.classes.classinstances(instances))
+
+    Ok(views.html.classes.classinstances(clsName, instances))
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
