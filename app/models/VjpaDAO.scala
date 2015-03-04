@@ -28,7 +28,12 @@ object VjpaDAO {
 
     close
 
-    emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
+    emf = try {
+      Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
+    } catch {
+      case p: PersistenceException => None
+    }
+    
     em  = emf map { e => e.createEntityManager }
     url = Some(connectionURL)
     
