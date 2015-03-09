@@ -1,6 +1,8 @@
 package models
 
+import scala.util.{Try, Success, Failure}
 import scala.language.postfixOps
+
 import com.versant.jpa._
 
 import javax.persistence._
@@ -12,7 +14,7 @@ object VjpaDAO {
   var em:  Option[EntityManager]        = None
   var url: Option[String]               = None
 
-  def open(connectionURL: String): Boolean = {
+  def open(connectionURL: String): Try[String] = {
     val GEN_PERSISTENCE_XML = 
           """<persistence version="2.0">
                  <persistence-unit name="genericUnit" transaction-type="RESOURCE_LOCAL">
@@ -28,20 +30,14 @@ object VjpaDAO {
 
     close
 
-    emf = try {
-      Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
+    try {
+      emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
+      em  = emf map { e => e.createEntityManager }
+      url = Some(connectionURL)
+      
+      Success(s"Successful connected to $connectionURL")
     } catch {
-      case p: PersistenceException => None
-    }
-    
-    em  = emf map { e => e.createEntityManager }
-    url = Some(connectionURL)
-    
-    val names = allClassNames
-
-    emf match {
-      case Some(_) => true
-      case None    => false
+      case e: Exception => Failure(e)
     }
   }
   
@@ -61,8 +57,9 @@ object VjpaDAO {
   def allClassNames = {
     val classes = emf map { e => DatabaseClass.getAllClasses(e) }
     val names   = classes map { arr => arr map { c => c.getFullyQualifiedName } }
+    val snames  = names map { _.sorted }
     
-    names
+    snames
   }
   
   def allDBNames = {

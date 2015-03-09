@@ -3,6 +3,8 @@ application.name = V/JPA Play
 name = Name
 description = Description
 databases = Database(s)
+
+connection.headline = Connect to Database(s)
 connection.url = Database URL
 connection.open = Connect
 connection.close = Disconnect

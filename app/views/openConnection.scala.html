@@ -3,6 +3,8 @@
 @import helper.twitterBootstrap._
 
 @main(Messages("application.name")) {
+  <h2>@Messages("connection.headline")</h2>
+  
   @helper.form(action = routes.VjpaDatabase.open) {
     <fieldset>
       @helper.inputText(connectionForm("url"))
