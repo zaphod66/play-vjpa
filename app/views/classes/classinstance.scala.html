@@ -1,7 +1,7 @@
-@import com.versant.jpa.generic.{ DatabaseObject, DatabaseField }
+@(instance: com.versant.jpa.generic.DatabaseObject, flds: Seq[com.versant.jpa.generic.DatabaseField])(implicit flash: Flash, lang: Lang)
+
 @import com.versant.jpa.LoidUtil
 @import java.lang.Exception
-@(instance: DatabaseObject, flds: Seq[DatabaseField])(implicit flash: Flash, lang: Lang)
 
 @main(Messages("application.name")) {
   <h2>@Messages("instance") ( @LoidUtil.convertLongToString(instance.getLoid) )</h2>
@@ -12,7 +12,6 @@
       <dt>@fld.getName</dt>
       <dd>@{
       	    try {
-      	    // fld.get(instance).toString
       	       val obj = fld.get(instance)
       	       if (obj == null) {
       	       	 "#Null"

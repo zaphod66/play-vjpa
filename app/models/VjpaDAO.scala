@@ -56,7 +56,8 @@ object VjpaDAO {
   
   def allClassNames = {
     val classes = emf map { e => DatabaseClass.getAllClasses(e) }
-    val names   = classes map { arr => arr map { c => c.getFullyQualifiedName } }
+//  val names   = classes map { arr => arr map { c => c.getFullyQualifiedName } }
+    val names   = classes map { arr => arr map { c => c.getName } }
     val snames  = names map { _.sorted }
     
     snames
@@ -75,25 +76,10 @@ object VjpaDAO {
     }
   }
   
-  def getSimpleName(fullyQualifiedName: String): String = {
-    val sname = (fullyQualifiedName split('.')).lastOption
-    sname.getOrElse("")
-  }
-  
   def getClass(clsName: String): Option[DatabaseClass] = {
     val clazz = emf map { e => DatabaseClass.forName(clsName, e) }
     
-    clazz match {
-      case Some(c) => {
-        if (c == null) {
-          val simpleName = getSimpleName(clsName)
-          emf map { e => DatabaseClass.forName(simpleName, e) }
-        } else {
-          clazz
-        }
-      }
-      case None => None
-    }
+    clazz
   }
   
   def fields(clazz: Option[DatabaseClass]): Seq[DatabaseField] = {
@@ -117,7 +103,7 @@ object VjpaDAO {
       query  = em map { _.createQuery(s"SELECT x FROM $clsName x") }
     } catch {
       case e: IllegalArgumentException => {
-        val simpleName = getSimpleName(clsName)
+        val simpleName = clsName
         
         query = em map { _.createQuery(s"SELECT x FROM $simpleName x") }
       }

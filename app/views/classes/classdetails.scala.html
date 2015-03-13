@@ -33,7 +33,7 @@
   </b></p>
   <h3>@Messages("fieldnames")</h3>
     <p>@flds.size fields</p>
-    <p><a href="@routes.Classes.allInstances(cls.getFullyQualifiedName)" class="btn">@Messages("instances")</a></p>
+    <p><a href="@routes.Classes.allInstances(cls.getName)" class="btn">@Messages("instances")</a></p>
   </dl>
   <dl class="dl-horizontal">
     @for(fld <- flds) {
