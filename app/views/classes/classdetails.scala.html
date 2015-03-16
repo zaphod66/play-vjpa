@@ -1,7 +1,7 @@
 @import com.versant.jpa.generic.{ DatabaseClass, DatabaseField }
 @(cls: DatabaseClass, flds: Seq[DatabaseField])(implicit flash: Flash, lang: Lang)
 
-@main(Messages("appication.name")) {
+@main(Messages("application.name")) {
   <h2>@Messages("fields") @(if (cls != null) cls.getFullyQualifiedName)</h2>
   <p>Superclass: <b>
     @{
@@ -33,9 +33,9 @@
   </b></p>
   <h3>@Messages("fieldnames")</h3>
     <p>@flds.size fields</p>
-    <p><a href="@routes.Classes.allInstances(cls.getFullyQualifiedName)" class="btn">@Messages("instances")</a></p>
+    <p><a href="@routes.Classes.allInstances(cls.getName)" class="btn">@Messages("instances")</a></p>
   </dl>
-  <dl class="dl-horizontal">
+  <dl class="products">
     @for(fld <- flds) {
       <dt>@fld.getName</dt>
       <dd>@fld.getTypeName</dd>
