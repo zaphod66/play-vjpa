@@ -14,3 +14,12 @@ object Global extends GlobalSettings {
     VjpaDAO.close()
   }
 }
+
+object IdGen {
+  var current = 0L
+
+  def next() = {
+    current = current + 1
+    current
+  }
+}
