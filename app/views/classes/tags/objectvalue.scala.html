@@ -1,0 +1,16 @@
+@(instance: com.versant.jpa.generic.DatabaseObject, fld: com.versant.jpa.generic.DatabaseField)
+
+@import play.api.Logger
+
+@{
+  try {
+    val obj = fld.get(instance)
+    if (obj == null) {
+      "#Null"
+    } else {
+      obj.toString
+    }
+  } catch {
+    case e: Exception => Logger.logger.warn("Exception...." + e); "#Nil"
+  }
+}

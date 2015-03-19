@@ -11,18 +11,7 @@
   <dl class="products">
     @for(fld <- flds) {
       <dt>@fld.getName</dt>
-      <dd>@{
-      	    try {
-      	       val obj = fld.get(instance)
-      	       if (obj == null) {
-      	       	 "#Null"
-      	       } else {
-      	         obj.toString
-      	       }
-      	    } catch {
-      	      case e: Exception => Logger.logger.warn("Exception...." + e); "#Nil"
-      	    }
-      	  }
+      <dd>@classes.tags.objectvalue(instance, fld)
       </dd>
     }
   </dl>
