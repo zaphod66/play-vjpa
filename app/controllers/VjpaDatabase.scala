@@ -1,10 +1,10 @@
 package controllers
 
 import play.api.mvc.{Controller, Action, Flash}
-import play.api.data.Form
-import play.api.data.Forms
+import play.api.data.{Form, Forms}
 import play.api.data.Forms._
 import play.api.i18n.Messages
+import play.api.Logger
 
 import scala.util.{Try, Success, Failure}
 
@@ -27,13 +27,13 @@ object VjpaDatabase extends Controller {
         success   = { c => connectionURL = c.url }
     )
 
-    println(s"connect to $connectionURL ...")
+    Logger.logger.info(s"Connecting to $connectionURL ...")
     val connected = VjpaDAO.open(connectionURL)
-    println(connected)
+    Logger.logger.info(connected.toString)
     
     connected match {
       case Success(s) => Redirect(routes.VjpaDatabase.connected).flashing("success" -> s)
-      case Failure(e) => Redirect(routes.Application.index()).flashing("failure" -> e.getMessage)
+      case Failure(e) => Redirect(routes.VjpaDatabase.requestURL).flashing("error" -> e.getMessage)
     }
   }
   

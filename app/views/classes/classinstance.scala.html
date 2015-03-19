@@ -1,5 +1,6 @@
 @(instance: com.versant.jpa.generic.DatabaseObject, flds: Seq[com.versant.jpa.generic.DatabaseField])(implicit flash: Flash, lang: Lang)
 
+@import play.api.Logger
 @import com.versant.jpa.LoidUtil
 @import java.lang.Exception
 
@@ -19,7 +20,7 @@
       	         obj.toString
       	       }
       	    } catch {
-      	      case e: Exception => println("Exception...." + e); "#Nil"
+      	      case e: Exception => Logger.logger.warn("Exception...." + e); "#Nil"
       	    }
       	  }
       </dd>
