@@ -2,13 +2,86 @@
 
 @import play.api.Logger
 
+@import com.versant.jpa.spi.PersistenceCapable
+@import com.versant.jpa.core.tracked.TrackedCollection
+@import com.versant.jpa.core.tracked._
+@import com.versant.jpa.metadata.AttributeMetaData.Category._
+
+@import com.versant.jpa.LoidUtil
+
 @{
   try {
     val obj = fld.get(instance)
     if (obj == null) {
       "#Null"
     } else {
-      obj.toString
+      if (obj.isInstanceOf[PersistenceCapable]) {
+      	val pc  = obj.asInstanceOf[PersistenceCapable]
+      	
+      	"[" + LoidUtil.convertLongToString(pc._vjpaGetId) + "]"
+      } else if (obj.isInstanceOf[TrackedCollection]) {
+        val tc = obj.asInstanceOf[TrackedCollection]
+        val cat = tc.getCategory
+        
+        cat match {
+        	case ARRAY_PRIMITIVES        => obj.toString
+        	case COLLECTION_PRIMITIVES   => obj.toString
+        	case ARRAY_REFERENCES        =>
+        	case COLLECTION_REFERENCES   => {
+        		val al = tc.asInstanceOf[TrackedArrayList]
+        		val ls = al.getLoidValues
+        		val ss = ls map { l => LoidUtil.convertLongToString(l) }
+        		val s = ss.mkString("[", ", ", "]")
+        		
+        		"#" + al.size + " " + s
+              }
+        	case MAP_PRIMITIVE_PRIMITIVE => {
+        		val mpp = tc.asInstanceOf[TrackedHashMap]
+        		val mks = mpp.getPrimitiveKeys.toList
+        		val mvs = mpp.getPrimitiveValues.toList
+        		val mkv = mks.zip(mvs)
+        		val mss = mkv map { case (k,v) => "(" + k.toString + " => " + v.toString + ")" }
+        		val s   = mss mkString("{", ", ", "}")
+        		
+        		"#" + mss.size + " " + s
+              }
+        	case MAP_PRIMITIVE_REFERENCE => {
+                val mpr = tc.asInstanceOf[TrackedHashMap]
+                val mks = mpr.getPrimitiveKeys.toList
+                val mvs = LoidUtil.getValuesLoids(mpr)
+                val mkv = mks.zip(mvs)
+                val mss = mkv map { case (k,v) => "(" + k.toString + " => " + LoidUtil.convertLongToString(v) + ")" }
+                val s   = mss mkString("{", ", ", "}")
+        		
+                "#" + mss.size + " " + s
+              }
+        	case MAP_REFERENCE_PRIMITIVE => {
+        		val mrp = tc.asInstanceOf[TrackedHashMap]
+        		val mks = LoidUtil.getKeysLoids(mrp)
+        		val mvs = mrp.getPrimitiveValues.toList
+        		val mkv = mks.zip(mvs)
+        		val mss = mkv map { case (k,v) => "(" + LoidUtil.convertLongToString(k) + " => " + v.toString + ")" }
+        		val s   = mss mkString("{", ", ", "}")
+        		
+        		"#" + mss.size + " " + s
+        	  }
+        	case MAP_REFERENCE_REFERENCE => {
+        		val mrr = tc.asInstanceOf[TrackedHashMap]
+        		val mks = LoidUtil.getKeysLoids(mrr)
+        		val mvs = LoidUtil.getValuesLoids(mrr)
+        		val mkv = mks.zip(mvs)
+        		val mss = mkv map { case (k,v) => "(" + LoidUtil.convertLongToString(k) + " => " +
+        			                                    LoidUtil.convertLongToString(v) + ")" }
+               
+        		val s   = mss mkString("{", ", ", "}")
+        		
+        		" #" + mss.size + " " + s
+        	  }
+        	case _ => "??: " + obj.toString
+        }
+      } else {
+        obj.toString
+      }
     }
   } catch {
     case e: Exception => Logger.logger.warn("Exception...." + e); "#Nil"

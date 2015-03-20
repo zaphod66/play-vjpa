@@ -11,7 +11,9 @@
   <dl class="products">
     @for(fld <- flds) {
       <dt>@fld.getName</dt>
-      <dd>@classes.tags.objectvalue(instance, fld)
+      <dd>
+        <em>@fld.getTypeName</em>
+        <p>@classes.tags.objectvalue(instance, fld)</p>
       </dd>
     }
   </dl>
