@@ -1,0 +1,8 @@
+@(mkv: List[(Object,java.lang.Long)])
+
+@import com.versant.jpa.LoidUtil
+@import scala.collection.JavaConverters._
+
+@((mkv map {
+	case (k,v) => "(" + k.toString + " => " + LoidUtil.convertLongToString(v) + ")"
+}).mkString("{", ", ", "}") )

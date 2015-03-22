@@ -1,5 +1,6 @@
+@(cls: com.versant.jpa.generic.DatabaseClass, flds: Seq[com.versant.jpa.generic.DatabaseField])(implicit flash: Flash, lang: Lang)
+
 @import com.versant.jpa.generic.{ DatabaseClass, DatabaseField }
-@(cls: DatabaseClass, flds: Seq[DatabaseField])(implicit flash: Flash, lang: Lang)
 
 @main(Messages("application.name")) {
   <h2>@Messages("fields") @(if (cls != null) cls.getFullyQualifiedName)</h2>
