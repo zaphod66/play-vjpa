@@ -1,19 +1,19 @@
-@(instance: com.versant.jpa.generic.DatabaseObject, flds: Seq[com.versant.jpa.generic.DatabaseField])(implicit flash: Flash, lang: Lang)
+@(instance: com.versant.jpa.generic.DatabaseObject, flds: Seq[(com.versant.jpa.generic.DatabaseField,String)])(implicit flash: Flash, lang: Lang)
 
 @import play.api.Logger
 @import com.versant.jpa.LoidUtil
 @import java.lang.Exception
 
 @main(Messages("application.name")) {
-  <h2>@Messages("instance") ( @LoidUtil.convertLongToString(instance.getLoid) )</h2>
+  <h2>@instance.getType.getName - @Messages("instance") ( @LoidUtil.convertLongToString(instance.getLoid) )</h2>
   <p>@instance.getType.toString</p>
   
   <dl class="products">
     @for(fld <- flds) {
-      <dt>@fld.getName</dt>
+      <dt>@fld._1.getName</dt>
       <dd>
-        <em>@fld.getTypeName</em>
-        <p>@classes.tags.objectvalue(instance, fld)</p>
+        <em>@fld._1.getTypeName</em>
+        <p>@play.api.templates.Html(fld._2)</p>
       </dd>
     }
   </dl>

@@ -132,16 +132,6 @@ object VjpaDAO {
     val flds     = fields(clazz)
     val fldNames = flds map { fld => fld.getName }
     
-    val tmp1 = flds
-    val tmp2 = tmp1 headOption
-    val tmp3 = tmp2 map { f => f.getName }
-    val tmp4 = tmp2 map { f => f.getTypeName }
-    
-    tmp3 match {
-      case Some(n) => println(s"Type of field $n is $tmp4")
-      case None    => println("f. getName failed")
-    }
-    
     fldNames
   }
   
