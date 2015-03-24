@@ -5,9 +5,11 @@
 @import java.lang.Exception
 
 @main(Messages("application.name")) {
-  <h2>@instance.getType.getName - @Messages("instance") ( @LoidUtil.convertLongToString(instance.getLoid) )</h2>
+  @defining(instance.getType.getName) { name =>
+  	<h2><a href="@controllers.routes.Classes.showClass(name)">@name</a> - @Messages("instance") ( @LoidUtil.convertLongToString(instance.getLoid) )</h2>
+  }
   <p>@instance.getType.toString</p>
-  
+ 
   <dl class="products">
     @for(fld <- flds) {
       <dt>@fld._1.getName</dt>

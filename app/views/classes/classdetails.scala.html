@@ -9,10 +9,10 @@
       if (cls != null) {
         val scls = cls.getSuperclass
     	  val sclsName = if (scls != null)
-  	          scls.getFullyQualifiedName
+  	          """<a href="""" + scls.getName + """">""" + scls.getFullyQualifiedName + """</a>"""
   	        else
   	          "no superclass"
-        sclsName
+        play.api.templates.Html(sclsName)
       } else {
         "no class"
       }
