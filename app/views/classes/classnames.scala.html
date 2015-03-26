@@ -14,6 +14,7 @@
   </dl>
   <h3>@Messages("classnames")</h3>
   <p>@clsNames.size classes</p>
+@*  
   <dl class="classnames">
     @for(name <- clsNames) {
       <dt>
@@ -21,4 +22,12 @@
       </dt>
     }
   </dl>
+*@
+  <ol>
+    @for(name <- clsNames) {
+      <li>
+        <a href="@controllers.routes.Classes.showClass(name)">@name</a>
+      </li>
+    }
+  </ol>
 }

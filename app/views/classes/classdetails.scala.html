@@ -3,7 +3,7 @@
 @import com.versant.jpa.generic.{ DatabaseClass, DatabaseField }
 
 @main(Messages("application.name")) {
-  <h2>@Messages("fields") @(if (cls != null) cls.getFullyQualifiedName)</h2>
+  <h2>@Messages("fields") <em>@(if (cls != null) cls.getFullyQualifiedName)</em></h2>
   <p>Superclass: <b>
     @{
       if (cls != null) {
@@ -23,10 +23,16 @@
       if (cls != null) {
         val sclss = cls.getSubclasses
         val names = sclss map { scls => scls.getFullyQualifiedName }
-        if (names.size > 0)
-          names.mkString(", ")
+        val links = sclss map { scls =>
+        	"""<a href="""" + scls.getName + """">""" + scls.getFullyQualifiedName + """</a>"""
+        }
+        val ls = if (links.size > 0)
+//        links.sorted.mkString("<p>", "</p><p>", "</p>")
+          links.sorted.mkString("<ol><li>", "</li><li>", "</li></ol>")
+//        links.sorted.mkString("<br>")
         else
           "no subclasses"
+        play.api.templates.Html(ls)
       } else {
         "no class"
       }
