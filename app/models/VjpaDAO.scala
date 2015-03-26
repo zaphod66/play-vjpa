@@ -1,5 +1,7 @@
 package models
 
+import play.api.Logger
+
 import scala.util.{Try, Success, Failure}
 import scala.language.postfixOps
 
@@ -43,7 +45,7 @@ object VjpaDAO {
   
   def close(): Boolean = {
     em map { e => e.close }
-    emf map { e => { e.close; println("closing...") } }
+    emf map { e => { e.close; Logger.logger.info(s"closing connection to ${url.getOrElse("-")}") } }
 
     em  = None
     emf = None
