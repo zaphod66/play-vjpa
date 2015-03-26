@@ -9,9 +9,9 @@
       if (cls != null) {
         val scls = cls.getSuperclass
     	  val sclsName = if (scls != null)
-  	          """<a href="""" + scls.getName + """">""" + scls.getFullyQualifiedName + """</a>"""
-  	        else
-  	          "no superclass"
+              """<a href="""" + scls.getName + """">""" + scls.getName + """</a>"""
+            else
+              "no superclass"
         play.api.templates.Html(sclsName)
       } else {
         "no class"
@@ -24,7 +24,7 @@
         val sclss = cls.getSubclasses
         val names = sclss map { scls => scls.getFullyQualifiedName }
         val links = sclss map { scls =>
-        	"""<a href="""" + scls.getName + """">""" + scls.getFullyQualifiedName + """</a>"""
+          """<a href="""" + scls.getName + """">""" + scls.getName + """</a>"""
         }
         val ls = if (links.size > 0)
 //        links.sorted.mkString("<p>", "</p><p>", "</p>")
