@@ -9,6 +9,8 @@ import com.versant.jpa._
 
 import javax.persistence._
 
+case class VjpaDAO(emf: EntityManagerFactory, em: EntityManager, url: String)
+
 object VjpaDAO {
   import scala.collection.JavaConverters._
   
@@ -16,7 +18,7 @@ object VjpaDAO {
   var em:  Option[EntityManager]        = None
   var url: Option[String]               = None
 
-  def open(connectionURL: String): Try[String] = {
+  def open(connectionURL: String): Try[Long] = {
     val GEN_PERSISTENCE_XML = 
           """<persistence version="2.0">
                  <persistence-unit name="genericUnit" transaction-type="RESOURCE_LOCAL">
@@ -30,26 +32,28 @@ object VjpaDAO {
     
     val props = Map("versant.persistence.xml" -> GEN_PERSISTENCE_XML)
 
-    close
-
     try {
       emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
       em  = emf map { e => e.createEntityManager }
       url = Some(connectionURL)
       
-      Success(s"Successful connected to $connectionURL")
+      val dao = VjpaDAO(emf.get, em.get, url.get)
+      
+      val sessionId = Global.addSession(dao)
+      Logger.logger.info(s"opened Session $sessionId")
+      
+      Success(sessionId)
     } catch {
       case e: Exception => Failure(e)
     }
   }
   
-  def close(): Boolean = {
-    em map { e => e.close }
-    emf map { e => { e.close; Logger.logger.info(s"closing connection to ${url.getOrElse("-")}") } }
-
-    em  = None
-    emf = None
-    url = None
+  def close(id: Long): Boolean = {
+    Logger.logger.info(s"closing session $id")
+    
+    val dao = Global.closeSession(id)
+    
+    dao foreach { d => d.em.close(); d.emf.close() }
     
     true
   }
@@ -58,7 +62,6 @@ object VjpaDAO {
   
   def allClassNames = {
     val classes = emf map { e => DatabaseClass.getAllClasses(e) }
-//  val names   = classes map { arr => arr map { c => c.getFullyQualifiedName } }
     val names   = classes map { arr => arr map { c => c.getName } }
     val snames  = names map { _.sorted }
     
@@ -135,9 +138,5 @@ object VjpaDAO {
     val fldNames = flds map { fld => fld.getName }
     
     fldNames
-  }
-  
-  def isInUse: Boolean = {
-    emf.isDefined
   }
 }
