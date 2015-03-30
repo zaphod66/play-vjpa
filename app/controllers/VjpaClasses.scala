@@ -39,7 +39,7 @@ object Classes extends Controller {
     val session = request.session.get("sessionId")
     
     val clsNames = (session map { id => VjpaDAO.allClassNames(id.toLong) }).getOrElse(None)
-    val dbsNames = Seq[String]()
+    val dbsNames = (session map { id => VjpaDAO.allDBNames(id.toLong) }).getOrElse(Seq[String]())
     
     clsNames match {
       case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))

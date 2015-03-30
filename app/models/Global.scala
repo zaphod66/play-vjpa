@@ -1,8 +1,11 @@
 package models
 
 import play.api.{GlobalSettings, Application, Logger}
-// import models.VjpaDAO
+import play.api.mvc.RequestHeader
+import play.api.mvc.Results._
+
 import scala.collection.mutable.Map
+import scala.concurrent.Future
 
 object Global extends GlobalSettings {
 
@@ -16,6 +19,10 @@ object Global extends GlobalSettings {
     Logger.logger.info("Application Play for V/JPA stopped.")
 
     sessionMap foreach { s => VjpaDAO.close(s._1) }
+  }
+  
+  override def onError(request: RequestHeader, ex: Throwable) = {
+    Future.successful(InternalServerError(request.path + " - " + ex.getMessage))
   }
   
   def addSession(dao: VjpaDAO): Long = {
