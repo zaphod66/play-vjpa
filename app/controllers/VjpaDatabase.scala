@@ -52,9 +52,11 @@ object VjpaDatabase extends Controller {
   }
   
   def connected = Action { implicit request =>
-    val dbsNames = VjpaDAO.allDBNames
+    val session = request.session.get("sessionId")
     
-    Ok(views.html.openDatabase(dbsNames))
+    val dbsNames = session map { s => VjpaDAO.allDBNames(s.toLong) }
+    
+    Ok(views.html.openDatabase(dbsNames.getOrElse(Seq[String]())))
   }
   
   val connectionMapping = mapping(

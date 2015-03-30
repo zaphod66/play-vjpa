@@ -14,10 +14,6 @@ case class VjpaDAO(emf: EntityManagerFactory, em: EntityManager, url: String)
 object VjpaDAO {
   import scala.collection.JavaConverters._
   
-  var emf: Option[EntityManagerFactory] = None
-  var em:  Option[EntityManager]        = None
-  var url: Option[String]               = None
-
   def open(connectionURL: String): Try[Long] = {
     val GEN_PERSISTENCE_XML = 
           """<persistence version="2.0">
@@ -33,9 +29,9 @@ object VjpaDAO {
     val props = Map("versant.persistence.xml" -> GEN_PERSISTENCE_XML)
 
     try {
-      emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
-      em  = emf map { e => e.createEntityManager }
-      url = Some(connectionURL)
+      val emf = Some(Persistence.createEntityManagerFactory("genericUnit", props.asJava))
+      val em  = emf map { e => e.createEntityManager }
+      val url = Some(connectionURL)
       
       val dao = VjpaDAO(emf.get, em.get, url.get)
       
@@ -51,27 +47,33 @@ object VjpaDAO {
   def close(id: Long): Boolean = {
     Logger.logger.info(s"closing session $id")
     
-    val dao = Global.closeSession(id)
+    val dao = Global.getSession(id)
     
     dao foreach { d => d.em.close(); d.emf.close() }
+    
+    Global.removeSession(id)
     
     true
   }
   
   import com.versant.jpa.generic._
   
-  def allClassNames = {
-    val classes = emf map { e => DatabaseClass.getAllClasses(e) }
+  def allClassNames(id: Long) = {
+    val dao = Global.getSession(id)
+    
+    val classes = dao map { d => DatabaseClass.getAllClasses(d.emf) }
     val names   = classes map { arr => arr map { c => c.getName } }
     val snames  = names map { _.sorted }
     
     snames
   }
   
-  def allDBNames = {
-    emf match {
-      case Some(e) => {
-        val vemf = e.asInstanceOf[VersantEntityManagerFactory]
+  def allDBNames(id: Long) = {
+    val dao = Global.getSession(id)
+    
+    dao match {
+      case Some(d) => {
+        val vemf = d.emf.asInstanceOf[VersantEntityManagerFactory]
         val dbs  = vemf.getAllDatabases
         val dbNames = dbs.map { db => db.getName }
         
@@ -81,8 +83,10 @@ object VjpaDAO {
     }
   }
   
-  def getClass(clsName: String): Option[DatabaseClass] = {
-    val clazz = emf map { e => DatabaseClass.forName(clsName, e) }
+  def getClass(id: Long, clsName: String): Option[DatabaseClass] = {
+    val dao = Global.getSession(id)
+    
+    val clazz = dao map { d => DatabaseClass.forName(clsName, d.emf) }
     
     clazz
   }
@@ -99,18 +103,20 @@ object VjpaDAO {
     }
   }
 
-  def getAllInstances(clsName: String): Seq[Long] = {
-    val dbClass = getClass(clsName)
+  def getAllInstances(id: Long, clsName: String): Seq[Long] = {
+    val dao = Global.getSession(id)
+    
+    val dbClass = getClass(id, clsName)
     
     var query: Option[Query] = None
     
     try {
-      query  = em map { _.createQuery(s"SELECT x FROM $clsName x") }
+      query  = dao map { d => d.em.createQuery(s"SELECT x FROM $clsName x") }
     } catch {
       case e: IllegalArgumentException => {
         val simpleName = clsName
         
-        query = em map { _.createQuery(s"SELECT x FROM $simpleName x") }
+        query = dao map { d => d.em.createQuery(s"SELECT x FROM $simpleName x") }
       }
     }
     
@@ -123,8 +129,9 @@ object VjpaDAO {
     slong.getOrElse(Seq[Long]())
   } 
   
-  def getInstance(loid: Long): Option[DatabaseObject] = {
-    val vem = em  map { _.asInstanceOf[VersantEntityManager] }
+  def getInstance(id: Long, loid: Long): Option[DatabaseObject] = {
+    val dao = Global.getSession(id)
+    val vem = dao map { d => d.em.asInstanceOf[VersantEntityManager] }
     val lst = vem map { _.find(List(loid).asJava) }
     val obj = lst map { l => if (l.size >= 1) l.get(0) }
     val dbo = obj map { _.asInstanceOf[DatabaseObject] }
@@ -132,8 +139,8 @@ object VjpaDAO {
     dbo
   }
   
-  def fieldNamesforClass(clsName: String) = {
-    val clazz    = getClass(clsName)
+  def fieldNamesforClass(id: Long, clsName: String) = {
+    val clazz    = getClass(id, clsName)
     val flds     = fields(clazz)
     val fldNames = flds map { fld => fld.getName }
     

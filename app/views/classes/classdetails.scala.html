@@ -12,7 +12,7 @@
               """<a href="""" + scls.getName + """">""" + scls.getName + """</a>"""
             else
               "no superclass"
-        play.api.templates.Html(sclsName)
+        play.twirl.api.Html(sclsName)
       } else {
         "no class"
       }
@@ -32,7 +32,7 @@
 //        links.sorted.mkString("<br>")
         else
           "no subclasses"
-        play.api.templates.Html(ls)
+        play.twirl.api.Html(ls)
       } else {
         "no class"
       }

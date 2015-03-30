@@ -25,8 +25,12 @@ object Global extends GlobalSettings {
     id
   }
   
-  def closeSession(id: Long): Option[VjpaDAO] = {
+  def removeSession(id: Long): Option[VjpaDAO] = {
     sessionMap.remove(id)
+  }
+  
+  def getSession(id: Long): Option[VjpaDAO] = {
+    sessionMap.get(id)
   }
   
   def sessionInUse(id: Long): Boolean = {

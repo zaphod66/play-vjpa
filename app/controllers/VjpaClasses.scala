@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
 
 object Classes extends Controller {
   def listNames(clsNames: Option[Array[String]]) = Action { implicit request =>
-    val dbsNames = VjpaDAO.allDBNames
+    val dbsNames = Seq[String]() // VjpaDAO.allDBNames
     
     clsNames match {
       case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))
@@ -23,26 +23,42 @@ object Classes extends Controller {
   }
   
   def showClass(clsName: String) = Action { implicit request =>
-    val clazz = VjpaDAO.getClass(clsName)
+    val session = request.session.get("sessionId")
+    
+    val clazz = (session map { id => VjpaDAO.getClass(id.toLong, clsName) }).getOrElse(None)
     val flds = VjpaDAO.fields(clazz)
     
-    Ok(views.html.classes.classdetails(clazz.get, flds))
+    clazz match {
+      case Some(cls) => Ok(views.html.classes.classdetails(cls, flds))
+      case None      => Ok("No Class found")
+    }
+    
   }
   
-  def listAllNames = {
-    val clsNames = VjpaDAO.allClassNames
+  def listAllNames = Action { implicit request =>
+    val session = request.session.get("sessionId")
     
-    listNames(clsNames)
+    val clsNames = (session map { id => VjpaDAO.allClassNames(id.toLong) }).getOrElse(None)
+    val dbsNames = Seq[String]()
+    
+    clsNames match {
+      case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))
+      case None        => Ok("No Classes found")
+    }
   }
   
   def allInstances(clsName: String) = Action { implicit request =>
-    val instances = VjpaDAO.getAllInstances(clsName)
+    val session = request.session.get("sessionId")
+    
+    val instances = session map { id => VjpaDAO.getAllInstances(id.toLong,clsName) }
 
-    Ok(views.html.classes.classinstances(clsName, instances))
+    Ok(views.html.classes.classinstances(clsName, instances.getOrElse(Seq[Long]())))
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
-    val obj = VjpaDAO.getInstance(loid)
+    val session = request.session.get("sessionId")
+
+    val obj = (session map { id => VjpaDAO.getInstance(id.toLong,loid) }).getOrElse(None)
 
     obj match {
       case Some(o) => {
