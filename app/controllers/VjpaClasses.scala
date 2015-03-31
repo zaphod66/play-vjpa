@@ -51,8 +51,9 @@ object Classes extends Controller {
     val session = request.session.get("sessionId")
     
     val instances = session map { id => VjpaDAO.getAllInstances(id.toLong,clsName) }
+    val sort      = instances map { _.sorted }
 
-    Ok(views.html.classes.classinstances(clsName, instances.getOrElse(Seq[Long]())))
+    Ok(views.html.classes.classinstances(clsName, sort.getOrElse(Seq[Long]())))
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
@@ -86,8 +87,7 @@ object Classes extends Controller {
         val cat = tc.getCategory
 
         cat match {
-          case ARRAY_PRIMITIVES        => v.toString
-          case COLLECTION_PRIMITIVES   => v.toString
+          case ARRAY_PRIMITIVES | COLLECTION_PRIMITIVES => v.toString
           case ARRAY_REFERENCES | COLLECTION_REFERENCES => {
             val al = tc.asInstanceOf[TrackedArrayList]
             val ls = al.getLoidValues
