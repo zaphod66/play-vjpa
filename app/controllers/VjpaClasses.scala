@@ -50,10 +50,13 @@ object Classes extends Controller {
   def allInstances(clsName: String) = Action { implicit request =>
     val session = request.session.get("sessionId")
     
-    val instances = session map { id => VjpaDAO.getAllInstances(id.toLong,clsName) }
-    val sort      = instances map { _.sorted }
-
-    Ok(views.html.classes.classinstances(clsName, sort.getOrElse(Seq[Long]())))
+    val loids = for {
+      id   <- session
+      inst = VjpaDAO.getAllInstances(id.toLong,clsName)
+      sort = inst.sorted
+    } yield sort
+    
+    Ok(views.html.classes.classinstances(clsName, loids.getOrElse(Seq[Long]())))
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
@@ -64,11 +67,14 @@ object Classes extends Controller {
     obj match {
       case Some(o) => {
         val flds = VjpaDAO.fields(Some(o.getType))  // fields
-        val vals = flds map { fld => fld.get(o) }   // value of fields
-        val ss   = vals map { value => val2String(value) }
-        val fss  = flds zip ss
 
-        Ok(views.html.classes.classinstance(o, fss))
+        val fs = for {
+          f <- flds
+          v = f.get(o)
+          s = val2String(v)
+        } yield(f, s)
+
+        Ok(views.html.classes.classinstance(o, fs))
       }
       case None    => NotFound
     }
@@ -107,15 +113,15 @@ object Classes extends Controller {
             "#" + mss.size + " " + s
           }
           case MAP_PRIMITIVE_REFERENCE => {
-                val mpr = tc.asInstanceOf[TrackedHashMap]
-                val mks = mpr.getPrimitiveKeys.toList
-                val mvs = LoidUtil.getValuesLoids(mpr).asScala
-                val mkv = mks.zip(mvs)
-                val mss = mkv map { case (k,v) => "(" + k.toString + " => " + loid2Anchor(v) + ")" }
-                val s   = mss mkString("{", ", ", "}")
+            val mpr = tc.asInstanceOf[TrackedHashMap]
+            val mks = mpr.getPrimitiveKeys.toList
+            val mvs = LoidUtil.getValuesLoids(mpr).asScala
+            val mkv = mks.zip(mvs)
+            val mss = mkv map { case (k,v) => "(" + k.toString + " => " + loid2Anchor(v) + ")" }
+            val s   = mss mkString("{", ", ", "}")
 
-                "#" + mss.size + " " + s
-              }
+            "#" + mss.size + " " + s
+          }
           case MAP_REFERENCE_PRIMITIVE => {
             val mrp = tc.asInstanceOf[TrackedHashMap]
             val mks = LoidUtil.getKeysLoids(mrp).asScala
@@ -125,7 +131,7 @@ object Classes extends Controller {
             val s   = mss mkString("{", ", ", "}")
 
             "#" + mss.size + " " + s
-            }
+          }
           case MAP_REFERENCE_REFERENCE => {
             val mrr = tc.asInstanceOf[TrackedHashMap]
             val mks = LoidUtil.getKeysLoids(mrr).asScala
@@ -135,7 +141,7 @@ object Classes extends Controller {
             val s   = mss mkString("{", ", ", "}")
 
             " #" + mss.size + " " + s
-            }
+          }
 
           case _ => "??: " + v.toString
         }
