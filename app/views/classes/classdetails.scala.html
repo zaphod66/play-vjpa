@@ -3,7 +3,7 @@
 @import com.versant.jpa.generic.{ DatabaseClass, DatabaseField }
 
 @main(Messages("application.name")) {
-  <h2>@Messages("fields") <em>@(if (cls != null) cls.getFullyQualifiedName)</em></h2>
+  <h2>@Messages("field.list") <em>@(if (cls != null) cls.getFullyQualifiedName)</em></h2>
   <p>Superclass: <b>
     @{
       if (cls != null) {

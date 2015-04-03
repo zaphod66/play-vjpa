@@ -9,9 +9,11 @@ connection.url = Database URL
 connection.open = Connect
 connection.close = Disconnect
 connection.classlist = List of classes
-connection.queryclass = Query classes
-connection.queryloid = Query by loid
-connection.submit = Submit
+
+query.class = Query classes
+query.loid = Query by loid
+query.loidnotfound = Loid not found
+query.submit = Submit
 
 class.list = List of classes
 class.names = Class names
