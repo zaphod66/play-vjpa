@@ -21,9 +21,9 @@ object Global extends GlobalSettings {
     sessionMap foreach { s => VjpaDAO.close(s._1) }
   }
   
-  override def onError(request: RequestHeader, ex: Throwable) = {
-    Future.successful(InternalServerError(request.path + " - " + ex.getMessage))
-  }
+//  override def onError(request: RequestHeader, ex: Throwable) = {
+//    Future.successful(InternalServerError(request.path + " - " + ex.getMessage))
+//  }
   
   def addSession(dao: VjpaDAO): Long = {
     val id = IdGen.next

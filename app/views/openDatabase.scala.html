@@ -9,15 +9,14 @@
   	  </dt>
     }
   </dl>
-  
-  
+
   <dl class="dl-horizontal">
     <dt>
       <p><a href="@routes.Classes.listAllNames" class="btn">@Messages("connection.classlist")</a></p>
     </dt>
     <dd>
-      <p><a href="@routes.VjpaDatabase.close" class="btn">@Messages("connection.close")</a></p>
+      <p><a href="@routes.Classes.requestLoid" class="btn">@Messages("connection.queryloid")</a></p>
     </dd>
   </dl>
-  
+  <p><a href="@routes.VjpaDatabase.close" class="btn">@Messages("connection.close")</a></p>
 }

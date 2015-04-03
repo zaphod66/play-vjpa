@@ -9,6 +9,8 @@ GET     /databases/open             controllers.VjpaDatabase.open
 GET     /databases/connected        controllers.VjpaDatabase.connected
 GET     /databases/close            controllers.VjpaDatabase.close
 
+GET     /classes/requestloid        controllers.Classes.requestLoid
+GET     /classes/queryLoid          controllers.Classes.queryLoid
 GET     /classes                    controllers.Classes.listAllNames
 GET     /classes/:name              controllers.Classes.showClass(name: String)
 GET     /classes/instances/:name    controllers.Classes.allInstances(name: String)

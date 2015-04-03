@@ -1,8 +1,12 @@
 package controllers
 
 import play.api.mvc.{Action, Controller, Flash}
+import play.api.data.{Form, Forms}
+import play.api.data.Forms._
 import play.api.i18n.Messages
-import models.VjpaDAO
+import play.api.Logger
+
+import models.{ VjpaDAO, ObjectLoid }
 
 import com.versant.jpa.LoidUtil
 import com.versant.jpa.spi.PersistenceCapable
@@ -60,26 +64,55 @@ object Classes extends Controller {
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
+    Logger.logger.info(s"showInstance($loid)")
+    
     val session = request.session.get("sessionId")
 
     val obj = (session map { id => VjpaDAO.getInstance(id.toLong,loid) }).getOrElse(None)
 
     obj match {
       case Some(o) => {
-        val flds = VjpaDAO.fields(Some(o.getType))  // fields
+        if (o != null) {
+          val flds = VjpaDAO.fields(Some(o.getType))  // fields
 
-        val fs = for {
-          f <- flds
-          v = f.get(o)
-          s = val2String(v)
-        } yield(f, s)
+          val fs = for {
+            f <- flds
+            v = f.get(o)
+            s = val2String(v)
+          } yield(f, s)
 
-        Ok(views.html.classes.classinstance(o, fs))
+          Ok(views.html.classes.classinstance(o, fs))
+        } else {
+          Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) + ("error" -> s"loid not found: $loid")))
+        }
       }
       case None    => NotFound
     }
   }
 
+  def requestLoid = Action { implicit request =>
+    Logger.logger.info("request loid")
+    
+    val form = if (request2flash.get("error").isDefined) {
+      loidForm.bind(request2flash.data)
+    } else {
+      loidForm.fillAndValidate(ObjectLoid("0.0.0"))
+    }
+
+    Ok(views.html.queryLoid(form))
+  }
+
+  def queryLoid = Action { implicit request =>
+    Logger.logger.info("query loid")
+    
+    val objectLoidForm = loidForm.bindFromRequest
+    
+    objectLoidForm.fold(
+        hasErrors = { form => Redirect(routes.Classes.requestLoid).flashing(Flash(objectLoidForm.data) + ("error" -> Messages("validation.errors"))) },
+        success   = { s =>    Redirect(routes.Classes.showInstance(string2Loid(s.loid))) }
+    )
+  }
+  
   def val2String(v: Object): String = {
     if (v == null) {
       "#Null"
@@ -154,4 +187,18 @@ object Classes extends Controller {
   def loid2Anchor(loid: Long): String = {
     s"""<a href="${controllers.routes.Classes.showInstance(loid)}">${LoidUtil.convertLongToString(loid)}</a>"""
   }
+  
+  def string2Loid(s: String): Long = {
+    if (s.contains('.')) {
+      LoidUtil.convertStringToLong(s)
+    } else {
+      s.toLong
+    }
+  }
+  
+  val loidMapping = mapping(
+      "loid" -> nonEmptyText
+  )(ObjectLoid.apply)(ObjectLoid.unapply)
+  
+  val loidForm = Form(loidMapping)
 }
