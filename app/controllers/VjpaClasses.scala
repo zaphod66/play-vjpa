@@ -140,7 +140,7 @@ object Classes extends Controller {
             val mks = mpp.getPrimitiveKeys.toList
             val mvs = mpp.getPrimitiveValues.toList
             val mkv = mks.zip(mvs)
-            val mss = mkv map { case (k,v) => "(" + k.toString + " => " + v.toString + ")" }
+            val mss = mkv map { case (k,v) => "(" + k.toString + " -> " + v.toString + ")" }
             val s   = mss mkString("{", ", ", "}")
 
             "#" + mss.size + " " + s
@@ -150,7 +150,7 @@ object Classes extends Controller {
             val mks = mpr.getPrimitiveKeys.toList
             val mvs = LoidUtil.getValuesLoids(mpr).asScala
             val mkv = mks.zip(mvs)
-            val mss = mkv map { case (k,v) => "(" + k.toString + " => " + loid2Anchor(v) + ")" }
+            val mss = mkv map { case (k,v) => "(" + k.toString + " -> " + loid2Anchor(v) + ")" }
             val s   = mss mkString("{", ", ", "}")
 
             "#" + mss.size + " " + s
@@ -160,7 +160,7 @@ object Classes extends Controller {
             val mks = LoidUtil.getKeysLoids(mrp).asScala
             val mvs = mrp.getPrimitiveValues.toList
             val mkv = mks.zip(mvs)
-            val mss = mkv map { case (k,v) => "(" + loid2Anchor(k) + " => " + v.toString + ")" }
+            val mss = mkv map { case (k,v) => "(" + loid2Anchor(k) + " -> " + v.toString + ")" }
             val s   = mss mkString("{", ", ", "}")
 
             "#" + mss.size + " " + s
@@ -170,7 +170,7 @@ object Classes extends Controller {
             val mks = LoidUtil.getKeysLoids(mrr).asScala
             val mvs = LoidUtil.getValuesLoids(mrr).asScala
             val mkv = mks.zip(mvs)
-            val mss = mkv map { case (k,v) => "(" + loid2Anchor(k) + " => " + loid2Anchor(v) + ")" }
+            val mss = mkv map { case (k,v) => "(" + loid2Anchor(k) + " -> " + loid2Anchor(v) + ")" }
             val s   = mss mkString("{", ", ", "}")
 
             " #" + mss.size + " " + s
