@@ -6,7 +6,7 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import play.api.Logger
 
-import models.{ VjpaDAO, ObjectLoid }
+import models.{ VjpaDAO, StringHolder }
 
 import com.versant.jpa.LoidUtil
 import com.versant.jpa.spi.PersistenceCapable
@@ -94,9 +94,9 @@ object Classes extends Controller {
     Logger.logger.info("request loid")
     
     val form = if (request2flash.get("error").isDefined) {
-      loidForm.bind(request2flash.data)
+      strForm.bind(request2flash.data)
     } else {
-      loidForm.fillAndValidate(ObjectLoid("0.0.0"))
+      strForm.fillAndValidate(StringHolder("0.0.0"))
     }
 
     Ok(views.html.queryLoid(form))
@@ -105,11 +105,11 @@ object Classes extends Controller {
   def queryLoid = Action { implicit request =>
     Logger.logger.info("query loid")
     
-    val objectLoidForm = loidForm.bindFromRequest
+    val stringForm = strForm.bindFromRequest
     
-    objectLoidForm.fold(
-        hasErrors = { form => Redirect(routes.Classes.requestLoid).flashing(Flash(objectLoidForm.data) + ("error" -> Messages("validation.errors"))) },
-        success   = { s =>    Redirect(routes.Classes.showInstance(string2Loid(s.loid))) }
+    stringForm.fold(
+        hasErrors = { form => Redirect(routes.Classes.requestLoid).flashing(Flash(stringForm.data) + ("error" -> Messages("validation.errors"))) },
+        success   = { s =>    Redirect(routes.Classes.showInstance(string2Loid(s.str))) }
     )
   }
   
@@ -196,9 +196,9 @@ object Classes extends Controller {
     }
   }
   
-  val loidMapping = mapping(
-      "loid" -> nonEmptyText
-  )(ObjectLoid.apply)(ObjectLoid.unapply)
+  val strMapping = mapping(
+      "str" -> nonEmptyText
+  )(StringHolder.apply)(StringHolder.unapply)
   
-  val loidForm = Form(loidMapping)
+  val strForm = Form(strMapping)
 }

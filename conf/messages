@@ -12,6 +12,7 @@ connection.classlist = List of classes
 
 query.class = Query classes
 query.loid = Query by loid
+query.jpql = Query by JPQL
 query.loidnotfound = Loid not found
 query.submit = Submit
 

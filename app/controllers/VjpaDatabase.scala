@@ -8,11 +8,11 @@ import play.api.Logger
 
 import scala.util.{Try, Success, Failure}
 
-import models.{ ConnectionURL, VjpaDAO }
+import models.{ StringHolder, VjpaDAO }
 
 object VjpaDatabase extends Controller {
   def requestURL = Action { implicit request =>
-    val form = connectionForm.fillAndValidate(ConnectionURL("jpatest1@towel-ubvm"))
+    val form = connectionForm.fillAndValidate(StringHolder("jpatest1@towel-ubvm"))
 
     Ok(views.html.openConnection(form))
   }
@@ -24,7 +24,7 @@ object VjpaDatabase extends Controller {
     
     urlForm.fold(
         hasErrors = { form => Redirect(routes.VjpaDatabase.requestURL).flashing(Flash(urlForm.data) + ("error" -> Messages("validation.errors"))) },
-        success   = { c => connectionURL = c.url }
+        success   = { c => connectionURL = c.str }
     )
 
     Logger.logger.info(s"Connecting to $connectionURL ...")
@@ -60,8 +60,8 @@ object VjpaDatabase extends Controller {
   }
   
   val connectionMapping = mapping(
-    "url" -> nonEmptyText
-  )(ConnectionURL.apply)(ConnectionURL.unapply)
+    "str" -> nonEmptyText
+  )(StringHolder.apply)(StringHolder.unapply)
   
   val connectionForm = Form(connectionMapping)
 }

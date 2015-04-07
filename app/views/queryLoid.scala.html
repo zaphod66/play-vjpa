@@ -1,11 +1,11 @@
-@(loidForm: Form[ObjectLoid])(implicit flash: Flash, lang: Lang)
+@(strForm: Form[StringHolder])(implicit flash: Flash, lang: Lang)
 
 @main(Messages("application.name")) {
   <h2>@Messages("query.loid")</h2>
   
   @helper.form(action = routes.Classes.queryLoid) {
     <fieldset>
-      @helper.inputText(loidForm("loid"))
+      @helper.inputText(strForm("loid"))
     </fieldset>
     <p><input type="submit" class="btn primary" value='@Messages("query.submit")'></p>
   }
