@@ -7,7 +7,7 @@
   
   @helper.form(action = routes.VjpaDatabase.open) {
     <fieldset>
-      @helper.inputText(connectionForm("url"))
+      @helper.inputText(connectionForm("url"), '_label -> "Database URL")
     </fieldset>
     <p><input type="submit" class="btn primary" value='@Messages("connection.open")'></p>
   }
