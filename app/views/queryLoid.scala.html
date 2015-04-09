@@ -5,7 +5,7 @@
   
   @helper.form(action = routes.Classes.queryLoid) {
     <fieldset>
-      @helper.inputText(strForm("loid"))
+      @helper.inputText(strForm("loid"), '_label -> "Object loid")
     </fieldset>
     <p><input type="submit" class="btn primary" value='@Messages("query.submit")'></p>
   }
