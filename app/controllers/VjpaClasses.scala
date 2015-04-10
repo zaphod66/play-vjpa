@@ -113,6 +113,27 @@ object Classes extends Controller {
     )
   }
   
+  def requestJpql = Action { implicit request =>
+    Logger.logger.info("request loid")
+    
+    val form = if (request2flash.get("error").isDefined) {
+      strForm.bind(request2flash.data)
+    } else {
+      strForm.fillAndValidate(StringHolder("SELECT o FROM Object o"))
+    }
+
+    Ok(views.html.queryJPQL(form))    
+  }
+  
+  def queryJpql = Action { implicit request =>
+    val stringForm = strForm.bindFromRequest
+    
+    stringForm.fold(
+        hasErrors = { form => Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> Messages("validation.errors"))) },
+        success   = { s    => Ok(s.str)}
+    )
+  }
+  
   def val2String(v: Object): String = {
     if (v == null) {
       "#Null"

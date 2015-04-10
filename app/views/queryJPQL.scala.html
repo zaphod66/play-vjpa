@@ -1,0 +1,12 @@
+@(strForm: Form[StringHolder])(implicit flash: Flash, lang: Lang)
+
+@main(Messages("application.name")) {
+  <h2>@Messages("query.jpql")</h2>
+  
+  @helper.form(action = routes.Classes.queryJpql) {
+    <fieldset>
+      @helper.inputText(strForm("str"), '_label -> "JPQL Query")
+    </fieldset>
+    <p><input type="submit" class="btn primary" value='@Messages("query.submit")'></p>
+  }
+}
