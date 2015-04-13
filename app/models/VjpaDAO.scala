@@ -139,6 +139,31 @@ object VjpaDAO {
     dbo
   }
   
+  def excuteQuery(id: Long, jpql: String): Try[Seq[Long]] = {
+    val dao = Global.getSession(id)
+    
+    var query: Option[Query] = None
+    
+    try {
+      query = dao map { d => d.em.createQuery(jpql) }
+    
+      val oloids = for {
+        q <- query
+        result = q.getResultList
+        loids  = LoidUtil.getLoids(result)
+        buffer = loids.asScala.toSeq
+        seqlong = buffer map { _.asInstanceOf[Long] }
+      } yield seqlong
+    
+      Success(oloids.getOrElse(Seq[Long]()))
+    } catch {
+      case e: Exception => {
+        Logger.logger.warn(s"Error executing query: $jpql. With ${e.getMessage}")
+        Failure(e)
+      }
+    }
+  }
+  
   def fieldNamesforClass(id: Long, clsName: String) = {
     val clazz    = getClass(id, clsName)
     val flds     = fields(clazz)

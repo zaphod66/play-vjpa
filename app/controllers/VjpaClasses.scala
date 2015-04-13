@@ -14,6 +14,7 @@ import com.versant.jpa.core.tracked.TrackedCollection
 import com.versant.jpa.core.tracked._
 import com.versant.jpa.metadata.AttributeMetaData.Category._
 
+import scala.util.{Try, Success, Failure}
 import scala.collection.JavaConverters._
 
 object Classes extends Controller {
@@ -114,7 +115,7 @@ object Classes extends Controller {
   }
   
   def requestJpql = Action { implicit request =>
-    Logger.logger.info("request loid")
+    Logger.logger.info("request jpql")
     
     val form = if (request2flash.get("error").isDefined) {
       strForm.bind(request2flash.data)
@@ -130,8 +131,29 @@ object Classes extends Controller {
     
     stringForm.fold(
         hasErrors = { form => Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> Messages("validation.errors"))) },
-        success   = { s    => Ok(s.str)}
+        success   = { s    => {
+          val session = request.session.get("sessionId")
+          val oloids  = executeJpql(session, s.str)
+          val loids   = oloids.getOrElse(Failure(new Exception("no results found")))
+
+          loids match {
+            case Success(ls) => { Ok(views.html.classes.classinstances(s.str, ls)) }
+            case Failure(e)  => { Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> e.getMessage)) }
+          }
+        }
+      }
     )
+  }
+  
+  def executeJpql(session: Option[String], jpql: String) = {
+  //val loids = session map { s => VjpaDAO.excuteQuery(s.toLong, jpql) }
+    
+    val loids = for {
+      id   <- session
+      inst = VjpaDAO.excuteQuery(id.toLong, jpql)
+    } yield inst
+    
+    loids
   }
   
   def val2String(v: Object): String = {

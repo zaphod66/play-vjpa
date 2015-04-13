@@ -23,3 +23,5 @@ class.instances = Instances
 class.noInstances = Number of instances
 field.list = List of Fields for class
 field.names = Field names
+
+validation.errors = Validation errors
