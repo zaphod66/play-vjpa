@@ -9,7 +9,7 @@ body, p, label { font-size:15px; }
 .alert-info { border-color:transparent; background-color:#3A87AD;
     color:white; font-weight:bold; }
 
-/* Set the width to result in a suitable resolution at 127mm wide. */
+/* Set the width to result in a suitable resolution at XXXmm wide. */
 div.screenshot { width: 1400px; margin:20px; background-color:#D0E7EF; }
 .navbar-fixed-top .navbar-inner { padding-left:20px; }
 .navbar .nav > li > a { color:#bbb; }

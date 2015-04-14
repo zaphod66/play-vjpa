@@ -137,7 +137,7 @@ object Classes extends Controller {
           val loids   = oloids.getOrElse(Failure(new Exception("no results found")))
 
           loids match {
-            case Success(ls) => { Ok(views.html.classes.classinstances(s.str, ls)) }
+            case Success(ls) => { Ok(views.html.classes.classinstances(s.str, ls.sorted)) }
             case Failure(e)  => { Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> e.getMessage)) }
           }
         }
