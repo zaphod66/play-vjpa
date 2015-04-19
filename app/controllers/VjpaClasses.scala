@@ -132,6 +132,8 @@ object Classes extends Controller {
     stringForm.fold(
         hasErrors = { form => Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> Messages("validation.errors"))) },
         success   = { s    => {
+          Logger.logger.info(s"executing JPQL: ${s.str}")
+
           val session = request.session.get("sessionId")
           val oloids  = executeJpql(session, s.str)
           val loids   = oloids.getOrElse(Failure(new Exception("no results found")))
