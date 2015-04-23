@@ -1,13 +1,13 @@
-@(clsName: String, loids: Seq[Long], page: Int)(implicit flash: Flash, lang: Lang)
+@(clsName: String, loids: Seq[Long], page: Int, maxPage: Int, pageLength: Int, total: Int)(implicit flash: Flash, lang: Lang)
 
 @import com.versant.jpa.LoidUtil
 
 @main(Messages("application.name")) {
-  <h2>@Messages("instances") <a href="@controllers.routes.Classes.showClass(clsName)">@clsName</a></h2>
-  <p>@Messages("noInstances") @loids.length</p>
-  <p>Page @page of @{(loids.length / 20) + 1}</p>
+  <h2>@Messages("class.instances") <a href="@controllers.routes.Classes.showClass(clsName)">@clsName</a></h2>
+  <p>@Messages("class.noInstances") @total</p>
+  <p>Page @page of @maxPage</p>
   
-  <ol>
+  <ol start=@{1 + (page - 1) * pageLength}>
     @for(loid <- loids) {
       <li>
         <a href="@controllers.routes.Classes.showInstance(loid)">
@@ -16,4 +16,7 @@
       </li>
     }
   </ol>
+  
+  @classes.paginate(page, pageLength, total, routes.Classes.allInstancesPage(clsName, _))
+  
 }

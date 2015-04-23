@@ -74,10 +74,25 @@ object Classes extends Controller {
       inst = VjpaDAO.getAllInstances(id.toLong, clsName)
       sort = inst.sorted
     } yield sort
+
+    val length = ( loids map { _.length } ).getOrElse(0)
+
+    val minPage = 1
+    val maxPage = (length / pageLength) + 1
+
+    Logger.logger.info(s"allInstancesPage($clsName, $page of $maxPage)")
     
-    val pageLoids = loids map { _.drop((page - 1) * 20).take(20) }
+    if (page < minPage) {
+      Logger.logger.info(s"Redirect->allInstances($clsName, $minPage)")
+      Redirect(routes.Classes.allInstancesPage(clsName, minPage))
+    } else if (page > maxPage) {
+      Logger.logger.info(s"Redirect->allInstances($clsName, $maxPage)")
+      Redirect(routes.Classes.allInstancesPage(clsName, maxPage))
+    } else {
+      val pageLoids = loids map { _.drop((page - 1) * 20).take(20) }
     
-    Ok(views.html.classes.classinstpage(clsName, pageLoids.getOrElse(Seq[Long]()), page))
+      Ok(views.html.classes.classinstpage(clsName, pageLoids.getOrElse(Seq[Long]()), page, maxPage, pageLength, length))
+    }
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
