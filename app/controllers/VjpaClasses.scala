@@ -64,6 +64,22 @@ object Classes extends Controller {
     Ok(views.html.classes.classinstances(clsName, loids.getOrElse(Seq[Long]())))
   }
   
+  def allInstancesPage(clsName: String, page: Int) = Action { implicit request =>
+    val pageLength = 20
+    
+    val session = request.session.get("sessionId")
+
+    val loids = for {
+      id <- session
+      inst = VjpaDAO.getAllInstances(id.toLong, clsName)
+      sort = inst.sorted
+    } yield sort
+    
+    val pageLoids = loids map { _.drop((page - 1) * 20).take(20) }
+    
+    Ok(views.html.classes.classinstpage(clsName, pageLoids.getOrElse(Seq[Long]()), page))
+  }
+  
   def showInstance(loid: Long) = Action { implicit request =>
     Logger.logger.info(s"showInstance($loid)")
     
