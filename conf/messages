@@ -25,3 +25,6 @@ field.list = List of Fields for class
 field.names = Field names
 
 validation.errors = Validation errors
+
+page.prev = Previous
+page.next = Next

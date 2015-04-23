@@ -1,4 +1,4 @@
-@(page:Int, pageLength:Int, collectionLength:Int, route:Int => Call, bound:Int = 5)
+@(page: Int, pageLength: Int, collectionLength: Int, route: Int => Call, bound: Int = 5)
 @lowbound() = @{
     ((page.toDouble / bound).floor * bound) toInt
 }
@@ -13,9 +13,9 @@
     <div class="pagination">
         <ul>
             @if(page == 1){
-                <li class="disabled"><a href="#">Previous</a></li>
+                <li class="disabled"><a href="#">@Messages("page.prev")</a></li>
             } else {
-                <li><a href="@route(page-1)">Previous</a></li>
+                <li><a href="@route(page-1)">@Messages("page.prev")</a></li>
  
             }
  
@@ -46,9 +46,9 @@
             }
  
             @if(page < highbound()) {
-                <li><a href="@route(page+1)">Next</a></li>
+                <li><a href="@route(page+1)">@Messages("page.next")</a></li>
             } else {
-                <li class="disabled"><a href="#">Next</a></li>
+                <li class="disabled"><a href="#">@Messages("page.next")</a></li>
  
             }
         </ul>

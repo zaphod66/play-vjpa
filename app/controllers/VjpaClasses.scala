@@ -61,7 +61,13 @@ object Classes extends Controller {
       sort = inst.sorted
     } yield sort
     
-    Ok(views.html.classes.classinstances(clsName, loids.getOrElse(Seq[Long]())))
+    val length = ( loids map { _.length } ).getOrElse(0)
+    
+    if (length > 100) {
+      Redirect(routes.Classes.allInstancesPage(clsName, 1))
+    } else {
+      Ok(views.html.classes.classinstances(clsName, loids.getOrElse(Seq[Long]())))
+    }
   }
   
   def allInstancesPage(clsName: String, page: Int) = Action { implicit request =>
