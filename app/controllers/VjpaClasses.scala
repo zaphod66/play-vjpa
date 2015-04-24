@@ -176,7 +176,7 @@ object Classes extends Controller {
           val loids   = oloids.getOrElse(Failure(new Exception("no results found")))
 
           loids match {
-            case Success(ls) => { Ok(views.html.classes.classinstances(s.str, ls.sorted)) }
+            case Success(ls) => { Ok(views.html.classes.classinstances(s.str, ls)) }
             case Failure(e)  => { Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> e.getMessage)) }
           }
         }
@@ -185,12 +185,12 @@ object Classes extends Controller {
   }
   
   def executeJpql(session: Option[String], jpql: String) = {
-  //val loids = session map { s => VjpaDAO.excuteQuery(s.toLong, jpql) }
     
     val loids = for {
       id   <- session
       inst = VjpaDAO.excuteQuery(id.toLong, jpql)
-    } yield inst
+      sort = inst map { _.sorted }
+    } yield sort
     
     loids
   }
