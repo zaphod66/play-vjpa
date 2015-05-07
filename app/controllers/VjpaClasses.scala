@@ -1,6 +1,6 @@
 package controllers
 
-import play.api.mvc.{Action, Controller, Flash}
+import play.api.mvc.{Action, Controller, Flash, Call, Request, AnyContent}
 import play.api.data.{Form, Forms}
 import play.api.data.Forms._
 import play.api.i18n.Messages
@@ -59,14 +59,22 @@ object Classes extends Controller {
       id   <- session
       inst = VjpaDAO.getAllInstances(id.toLong,clsName)
       sort = inst.sorted
+      _ <- VjpaDAO.addLoids(id.toLong, sort)
     } yield sort
     
     val length = ( loids map { _.length } ).getOrElse(0)
     
     if (length > 100) {
+      def route = routes.Classes.allInstancesPage(clsName, _: Int)
+      
       Redirect(routes.Classes.allInstancesPage(clsName, 1))
     } else {
-      Ok(views.html.classes.classinstances(clsName, loids.getOrElse(Seq[Long]())))
+      val route = controllers.routes.Classes.showClass(clsName).toString
+      val link  = s"""<a href="$route">$clsName</a>"""
+      
+      showInstances("Class Instances", link, loids.getOrElse(Seq[Long]()), request)
+    //Ok(views.html.classes.loidsShowAll("Class Instances", link, loids.getOrElse(Seq[Long]())))
+    //Ok(views.html.classes.classinstances(clsName, loids.getOrElse(Seq[Long]())))
     }
   }
   
@@ -79,6 +87,7 @@ object Classes extends Controller {
       id <- session
       inst = VjpaDAO.getAllInstances(id.toLong, clsName)
       sort = inst.sorted
+      _ <- VjpaDAO.addLoids(id.toLong, sort)
     } yield sort
 
     val length = ( loids map { _.length } ).getOrElse(0)
@@ -89,16 +98,29 @@ object Classes extends Controller {
     Logger.logger.info(s"allInstancesPage($clsName, $page of $maxPage)")
     
     if (page < minPage) {
-      Logger.logger.info(s"Redirect->allInstances($clsName, $minPage)")
+      Logger.logger.info(s"Redirect->allInstancesPage($clsName, $minPage)")
       Redirect(routes.Classes.allInstancesPage(clsName, minPage))
     } else if (page > maxPage) {
-      Logger.logger.info(s"Redirect->allInstances($clsName, $maxPage)")
+      Logger.logger.info(s"Redirect->allInstancesPage($clsName, $maxPage)")
       Redirect(routes.Classes.allInstancesPage(clsName, maxPage))
     } else {
-      val pageLoids = loids map { _.drop((page - 1) * 20).take(20) }
-    
-      Ok(views.html.classes.classinstpage(clsName, pageLoids.getOrElse(Seq[Long]()), page, maxPage, pageLength, length))
+      val pageLoids = ( loids map { _.drop((page - 1) * 20).take(20) } ).getOrElse(Seq[Long]())
+      val route = controllers.routes.Classes.showClass(clsName).toString
+      val link  = s"""<a href="$route">$clsName</a>"""
+      val call  = (routes.Classes.allInstancesPage _ ).curried(clsName)
+
+      Ok(views.html.classes.loidsShowPage(clsName, link, pageLoids, call, page, maxPage, pageLength, length))
     }
+  }
+  
+  def showInstances(title: String, link: String, loids: Seq[Long], request: Request[AnyContent]) = {
+    implicit val r = request
+    Ok(views.html.classes.loidsShowAll("Class Instances", link, loids))
+  }
+  
+  def showInstancesPage(title: String, page: Int, route: Int => Call, request: Request[AnyContent]) = {
+    implicit val r = request
+    Ok
   }
   
   def showInstance(loid: Long) = Action { implicit request =>
@@ -164,6 +186,7 @@ object Classes extends Controller {
   }
   
   def queryJpql = Action { implicit request =>
+    
     val stringForm = strForm.bindFromRequest
     
     stringForm.fold(
@@ -175,8 +198,19 @@ object Classes extends Controller {
           val oloids  = executeJpql(session, s.str)
           val loids   = oloids.getOrElse(Failure(new Exception("no results found")))
 
+          val route   = controllers.routes.Classes.requestJpql.toString
+          val link    = s"""<a href="$route">${s.str}</a>"""
+          val call  = (routes.Classes.allInstancesPage _ ).curried("JPQL Query")
+          
           loids match {
-            case Success(ls) => { Ok(views.html.classes.classinstances(s.str, ls)) }
+            case Success(ls) => { if (ls.length > 100) {
+                                  //Ok(views.html.classes.classinstpage(s.str, ls.take(20), 1, ls.length / 20, 20, ls.length))
+                                    Ok(views.html.classes.loidsShowPage(s.str, link, ls.take(20), call, 1, ls.length / 20, 20, ls.length))
+                                  //Ok(views.html.classes.classinstances(s.str, ls))
+                                  } else {
+                                    Ok(views.html.classes.loidsShowAll("JPQL Instances", link, ls))
+                                  }
+                                }
             case Failure(e)  => { Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> e.getMessage)) }
           }
         }
@@ -190,6 +224,7 @@ object Classes extends Controller {
       id   <- session
       inst = VjpaDAO.excuteQuery(id.toLong, jpql)
       sort = inst map { _.sorted }
+      _ = sort map { VjpaDAO.addLoids(id.toLong, _) }
     } yield sort
     
     loids

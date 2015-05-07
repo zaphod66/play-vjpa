@@ -1,0 +1,22 @@
+@(title: String, link: String, loids: Seq[Long], route: Int => Call, page: Int, maxPage: Int, pageLength: Int, total: Int)(implicit flash: Flash, lang: Lang)
+
+@import com.versant.jpa.LoidUtil
+
+@main(Messages("application.name")) {
+  <h1>@title</h1>
+  @classes.loidsHeader(link, total)
+  <p>Page @page of @maxPage</p>
+  
+  <ol start=@{1 + (page - 1) * pageLength}>
+    @for(loid <- loids) {
+      <li>
+        <a href="@controllers.routes.Classes.showInstance(loid)">
+          @LoidUtil.convertLongToString(loid)
+        </a>
+      </li>
+    }
+  </ol>
+  
+  @classes.paginate(page, pageLength, total, route)
+  
+}

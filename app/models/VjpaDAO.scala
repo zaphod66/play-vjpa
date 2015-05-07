@@ -171,4 +171,19 @@ object VjpaDAO {
     
     fldNames
   }
+  
+  def addLoids(id: Long, loids: Seq[Long]) = {
+    Logger.logger.info(s"Caching loids for session $id")
+    Global.addLoids(id, loids)
+  }
+  
+  def getLoids(id: Long) = {
+    Logger.logger.info(s"Getting loids for session $id")
+    Global.getLoids(id)
+  }
+  
+  def removeLoids(id: Long) = {
+    Logger.logger.info(s"Removing loids for session $id")
+    Global.removeLoids(id)
+  }
 }

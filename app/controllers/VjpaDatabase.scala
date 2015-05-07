@@ -12,8 +12,13 @@ import models.{ StringHolder, VjpaDAO }
 
 object VjpaDatabase extends Controller {
   def requestURL = Action { implicit request =>
-    val form = connectionForm.fillAndValidate(StringHolder("jpatest1@towel-ubvm"))
-
+    
+    val form = if (request2flash.get("error").isDefined) {
+      connectionForm.bind(request2flash.data)
+    } else {
+      connectionForm.fillAndValidate(StringHolder("jpatest1@towel-ubvm"))
+    }
+    
     Ok(views.html.openConnection(form))
   }
   
@@ -38,7 +43,7 @@ object VjpaDatabase extends Controller {
       }
       case Failure(e) => {
         Logger.logger.info(s"connection to $connectionURL failed." + e.getMessage)
-        Redirect(routes.VjpaDatabase.requestURL).flashing("error" -> e.getMessage)
+        Redirect(routes.VjpaDatabase.requestURL).flashing(Flash(urlForm.data) + ("error" -> e.getMessage))
       }
     }
   }

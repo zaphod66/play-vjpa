@@ -10,6 +10,7 @@ import scala.concurrent.Future
 object Global extends GlobalSettings {
 
   private val sessionMap = Map[Long,VjpaDAO]()
+  private val loidsCache = Map[Long,Seq[Long]]()
   
   override def onStart(app: Application) {
     Logger.logger.info("Application Play for V/JPA started.")
@@ -33,6 +34,7 @@ object Global extends GlobalSettings {
   }
   
   def removeSession(id: Long): Option[VjpaDAO] = {
+    removeLoids(id)
     sessionMap.remove(id)
   }
   
@@ -42,6 +44,18 @@ object Global extends GlobalSettings {
   
   def sessionInUse(id: Long): Boolean = {
     sessionMap.contains(id)
+  }
+  
+  def addLoids(id: Long, loids: Seq[Long]) = {
+    loidsCache.put(id, loids)
+  }
+  
+  def getLoids(id: Long) = {
+    loidsCache.get(id)
+  }
+  
+  def removeLoids(id: Long) = {
+    loidsCache.remove(id)
   }
 }
 

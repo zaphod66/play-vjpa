@@ -18,6 +18,8 @@ query.submit = Submit
 
 class.list = List of classes
 class.names = Class names
+class.instOf = Instance of 
+class.instsOf = Instances of 
 class.instance = Instance
 class.instances = Instances
 class.noInstances = Number of instances
