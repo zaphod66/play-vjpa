@@ -73,7 +73,6 @@ object Classes extends Controller {
       val link  = s"""<a href="$route">$clsName</a>"""
       
       Ok(views.html.classes.loidsShowAll("Class Instances", link, loids.getOrElse(Seq[Long]())))
-//    showInstances("Class Instances", link, request)
     }
   }
   
@@ -84,17 +83,15 @@ object Classes extends Controller {
 
     val loids = for {
       id <- session
-      inst = VjpaDAO.getAllInstances(id.toLong, clsName)
-      sort = inst.sorted
-      _ <- VjpaDAO.addLoids(id.toLong, sort)
-    } yield sort
+      ls <- VjpaDAO.getLoids(id.toLong)
+    } yield ls
 
     val length = ( loids map { _.length } ).getOrElse(0)
 
     val minPage = 1
     val maxPage = (length / pageLength) + 1
 
-    Logger.logger.info(s"allInstancesPage($clsName, $page of $maxPage)")
+    Logger.logger.info(s"allInstancesPage $clsName, page $page")
     
     if (page < minPage) {
       Logger.logger.info(s"Redirect->allInstancesPage($clsName, $minPage)")
@@ -109,7 +106,6 @@ object Classes extends Controller {
       val call  = (routes.Classes.allInstancesPage _ ).curried(clsName)
 
       showInstancesPageCached(clsName, link, page, call, request)
-    //Ok(views.html.classes.loidsShowPage(clsName, link, pageLoids, call, page, maxPage, pageLength, length))
     }
   }
   
@@ -121,19 +117,14 @@ object Classes extends Controller {
       ls <- VjpaDAO.getLoids(id.toLong)
     } yield ls
     
-    val total = ( loids map { _.length } ).getOrElse(0)
-    val pageLoids = ( loids map { _.drop((page - 1) * 20).take(20) } ).getOrElse(Seq[Long]())
-    val pageLength = 20
-    val minPage = 1
-    val maxPage = (total / pageLength) + 1
-    
-    Logger.logger.info(s"jpqlInstancesPage total: $total page: $page maxPage: $maxPage")
+    Logger.logger.info(s"jpqlInstancesPage page: $page")
     
     val route   = controllers.routes.Classes.requestJpql.toString
     val link    = s"""<a href="$route">${query}</a>"""
     val call  = (routes.Classes.jpqlInstancesPage _ ).curried(query)
     
-    Ok(views.html.classes.loidsShowPage(query, link, pageLoids, call, page, maxPage, pageLength, total))
+    showInstancesPageCached(query, link, page, call, request)
+//  Ok(views.html.classes.loidsShowPage(query, link, pageLoids, call, page, maxPage, pageLength, total))
   }
 
   def showInstancesPageCached(title: String, link: String, page: Int, call: Int => Call, request: Request[AnyContent]) = {
@@ -153,6 +144,9 @@ object Classes extends Controller {
     
     Logger.logger.info(s"showInstancesPage total: $total page: $page maxPage: $maxPage")
     
+    if (page < minPage) {
+      
+    }
     Ok(views.html.classes.loidsShowPage(title, link, pageLoids, call, page, maxPage, pageLength, total))
   }
   
