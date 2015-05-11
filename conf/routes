@@ -18,7 +18,7 @@ GET     /classes/:name              controllers.Classes.showClass(name: String)
 GET     /classes/instance/:loid     controllers.Classes.showInstance(loid: Long)
 GET     /classes/instances/:name    controllers.Classes.allInstances(name: String)
 GET     /classes/instances/:name/:page controllers.Classes.allInstancesPage(name: String, page: Int)
-GET     /classes/jpql/:query/:page         controllers.Classes.jpqlInstancesPage(query: String, page: Int)
+GET     /classes/jpql/:query/:page  controllers.Classes.jpqlInstancesPage(query: String, page: Int)
 GET     /classes/cache/:title/:page controllers.Classes.jpqlInstancesPage(title: String, page: Int)
 
 # Map static resources from the /public folder to the /assets URL path

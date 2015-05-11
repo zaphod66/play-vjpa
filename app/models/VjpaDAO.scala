@@ -36,7 +36,7 @@ object VjpaDAO {
       val dao = VjpaDAO(emf.get, em.get, url.get)
       
       val sessionId = Global.addSession(dao)
-      Logger.logger.info(s"opened Session $sessionId")
+      Logger.logger.info(s"Opened session $sessionId.")
       
       Success(sessionId)
     } catch {
@@ -173,8 +173,9 @@ object VjpaDAO {
   }
   
   def addLoids(id: Long, loids: Seq[Long]) = {
-    Logger.logger.info(s"Caching loids for session $id")
+    Logger.logger.info(s"Caching loids (${loids.size}) for session $id")
     Global.addLoids(id, loids)
+    loids
   }
   
   def getLoids(id: Long) = {
