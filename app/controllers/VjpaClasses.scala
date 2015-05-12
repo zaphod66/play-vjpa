@@ -134,7 +134,7 @@ object Classes extends Controller {
           Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) + ("error" -> s"loid not found: $loid")))
         }
       }
-      case None    => NotFound
+      case None    => Redirect(routes.Application.index)
     }
   }
 
@@ -302,9 +302,6 @@ object Classes extends Controller {
     }
   }
   
-  val strMapping = mapping(
-      "str" -> nonEmptyText
-  )(StringHolder.apply)(StringHolder.unapply)
-  
-  val strForm = Form(strMapping)
+  val strMapping = mapping("str" -> nonEmptyText)(StringHolder.apply)(StringHolder.unapply)
+  val strForm    = Form(strMapping)
 }
