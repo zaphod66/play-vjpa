@@ -18,15 +18,6 @@ import scala.util.{Try, Success, Failure}
 import scala.collection.JavaConverters._
 
 object Classes extends Controller {
-  def listNames(clsNames: Option[Array[String]]) = Action { implicit request =>
-    val dbsNames = Seq[String]() // VjpaDAO.allDBNames
-    
-    clsNames match {
-      case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))
-      case None        => Ok("No Classes found")
-    }
-  }
-  
   def showClass(clsName: String) = Action { implicit request =>
     val session = request.session.get("sessionId")
     
@@ -35,9 +26,8 @@ object Classes extends Controller {
     
     clazz match {
       case Some(cls) => Ok(views.html.classes.classdetails(cls, flds))
-      case None      => Ok("No Class found")
+      case None      => Redirect(routes.Application.index)
     }
-    
   }
   
   def listAllNames = Action { implicit request =>
@@ -48,7 +38,7 @@ object Classes extends Controller {
     
     clsNames match {
       case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))
-      case None        => Ok("No Classes found")
+      case None        => Redirect(routes.Application.index)
     }
   }
   
@@ -80,7 +70,7 @@ object Classes extends Controller {
     val link  = s"""<a href="$route">$clsName</a>"""
     val redir = routes.Classes.allInstancesPage _
 
-    showInstancesPageCached(clsName, link, page, redir, request)
+    showInstancesPageCached("Class Instances", link, page, redir, request)
   }
   
   def jpqlInstancesPage(query: String, page: Int) = Action { implicit request =>
@@ -88,7 +78,7 @@ object Classes extends Controller {
     val link    = s"""<a href="$route">${query}</a>"""
     val redir   = routes.Classes.jpqlInstancesPage _
     
-    showInstancesPageCached(query, link, page, redir, request)
+    showInstancesPageCached("JPQL Result", link, page, redir, request)
   }
 
   def showInstancesPageCached(title: String, link: String, page: Int, redir: (String, Int) => Call, request: Request[AnyContent]) = {
@@ -207,7 +197,7 @@ object Classes extends Controller {
                                     val route = controllers.routes.Classes.requestJpql.toString
                                     val link  = s"""<a href="$route">${s.str}</a>"""
           
-                                    Ok(views.html.classes.loidsShowAll("JPQL Instances", link, ls)).withSession(request.session + ("lastQuery" -> s.str))
+                                    Ok(views.html.classes.loidsShowAll("JPQL Result", link, ls)).withSession(request.session + ("lastQuery" -> s.str))
                                   }
                                 }
             case Failure(e)  => { Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> e.getMessage)) }

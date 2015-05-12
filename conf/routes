@@ -9,17 +9,16 @@ GET     /databases/open             controllers.VjpaDatabase.open
 GET     /databases/connected        controllers.VjpaDatabase.connected
 GET     /databases/close            controllers.VjpaDatabase.close
 
+GET     /classes                    controllers.Classes.listAllNames
 GET     /classes/requestloid        controllers.Classes.requestLoid
 GET     /classes/queryLoid          controllers.Classes.queryLoid
 GET     /classes/requestjpql        controllers.Classes.requestJpql
 GET     /classes/queryJpql          controllers.Classes.queryJpql
-GET     /classes                    controllers.Classes.listAllNames
 GET     /classes/:name              controllers.Classes.showClass(name: String)
 GET     /classes/instance/:loid     controllers.Classes.showInstance(loid: Long)
 GET     /classes/instances/:name    controllers.Classes.allInstances(name: String)
 GET     /classes/instances/:name/:page controllers.Classes.allInstancesPage(name: String, page: Int)
 GET     /classes/jpql/:query/:page  controllers.Classes.jpqlInstancesPage(query: String, page: Int)
-GET     /classes/cache/:title/:page controllers.Classes.jpqlInstancesPage(title: String, page: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
