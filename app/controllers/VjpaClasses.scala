@@ -61,7 +61,7 @@ object Classes extends Controller {
       val route = controllers.routes.Classes.showClass(clsName).toString
       val link  = s"""<a href="$route">$clsName</a>"""
       
-      Ok(views.html.classes.loidsShowAll("Class Instances", link, realLoids))
+      Ok(views.html.classes.loidsShowAll(Messages("class.result"), link, realLoids))
     }
   }
   
@@ -70,7 +70,7 @@ object Classes extends Controller {
     val link  = s"""<a href="$route">$clsName</a>"""
     val redir = routes.Classes.allInstancesPage _
 
-    showInstancesPageCached("Class Instances", link, page, redir, request)
+    showInstancesPageCached(Messages("class.result"), link, page, redir, request)
   }
   
   def jpqlInstancesPage(query: String, page: Int) = Action { implicit request =>
@@ -78,7 +78,7 @@ object Classes extends Controller {
     val link    = s"""<a href="$route">${query}</a>"""
     val redir   = routes.Classes.jpqlInstancesPage _
     
-    showInstancesPageCached("JPQL Result", link, page, redir, request)
+    showInstancesPageCached(Messages("query.result"), link, page, redir, request)
   }
 
   def showInstancesPageCached(title: String, link: String, page: Int, redir: (String, Int) => Call, request: Request[AnyContent]) = {
@@ -197,7 +197,7 @@ object Classes extends Controller {
                                     val route = controllers.routes.Classes.requestJpql.toString
                                     val link  = s"""<a href="$route">${s.str}</a>"""
           
-                                    Ok(views.html.classes.loidsShowAll("JPQL Result", link, ls)).withSession(request.session + ("lastQuery" -> s.str))
+                                    Ok(views.html.classes.loidsShowAll(Messages("query.result"), link, ls)).withSession(request.session + ("lastQuery" -> s.str))
                                   }
                                 }
             case Failure(e)  => { Redirect(routes.Classes.requestJpql).flashing(Flash(stringForm.data) + ("error" -> e.getMessage)) }

@@ -15,6 +15,7 @@ query.loid = Query by loid
 query.jpql = Query by JPQL
 query.loidnotfound = Loid not found
 query.submit = Submit
+query.result = JPQL Result
 
 class.list = List of classes
 class.names = Class names
@@ -23,6 +24,7 @@ class.instsOf = Instances of
 class.instance = Instance
 class.instances = Instances
 class.noInstances = Number of instances
+class.result = Class Instances
 field.list = List of Fields for class
 field.names = Field names
 

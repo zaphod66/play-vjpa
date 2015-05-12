@@ -2,19 +2,33 @@ application.name = V/JPA Play
 
 name = Name
 description = Beschreibung
-databases = Datenbank(en)
+databases = Datenbanke(n)
 
-connection.headline = Verbinde zu Datenbank(en)
+connection.headline = Connect to Database(s)
 connection.url = Datenbank URL
 connection.open = Verbinden
 connection.close = Schliessen
 connection.classlist = Liste aller Klassen
-connection.queryclass = Klassen abfrage
 
-classes = Klassen
-classnames = Klassennamen
-fields = List of Fields for class
-fieldnames = Field names
-instance = Instanz
-instances = Instanzen
-noInstances = Anzahl der Instanzen
+query.class = Klassenabfrage
+query.loid = Abfrage via loid
+query.jpql = Abfrage via JPQL
+query.loidnotfound = Loid nicht gefunden
+query.submit = Abschicken
+query.result = JPQL Ergebnis
+
+class.list = Liste aller Klassen
+class.names = Klassennamen
+class.instOf = Instanz von 
+class.instsOf = Instanzen von 
+class.instance = Instanz
+class.instances = Instanzen
+class.noInstances = Anzahl der Instanzen
+class.result = Klassen Instanzen
+field.list = Felder der Klasse
+field.names = Feldnamen
+
+validation.errors = Vwrifizierungs Fehler
+
+page.prev = Vorherige
+page.next = Nächste
