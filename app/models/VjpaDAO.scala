@@ -61,8 +61,8 @@ object VjpaDAO {
   def allClassNames(id: Long) = {
     val dao = Global.getSession(id)
     
-    val classes = dao map { d => DatabaseClass.getAllClasses(d.emf) }
-    val names   = classes map { arr => arr map { c => c.getName } }
+    val classes = dao map { d => DatabaseClass.getAllClasses(d.emf).toSeq }
+    val names   = classes map { s => s map { c => c.getName } }
     val snames  = names map { _.sorted }
     
     snames
@@ -71,38 +71,44 @@ object VjpaDAO {
   def allDBNames(id: Long) = {
     val dao = Global.getSession(id)
     
-    dao match {
-      case Some(d) => {
-        val vemf = d.emf.asInstanceOf[VersantEntityManagerFactory]
-        val dbs  = vemf.getAllDatabases
-        val dbNames = dbs.map { db => db.getName }
-        
-        dbNames.toSeq
-      }
-      case None => Seq[String]()
+    dao map { d =>
+      val vemf = d.emf.asInstanceOf[VersantEntityManagerFactory]
+      val dbs  = vemf.getAllDatabases
+      val dbNames = dbs map { _.getName }
+      
+      dbNames.toSeq
     }
   }
   
-  def getClass(id: Long, clsName: String): Option[DatabaseClass] = {
+  def getClass(id: Long, clsName: String) = {
     val dao = Global.getSession(id)
     
-    val clazz = dao map { d => DatabaseClass.forName(clsName, d.emf) }
-    
-    clazz
+    dao map { d => DatabaseClass.forName(clsName, d.emf) }
   }
   
-  def fields(clazz: Option[DatabaseClass]): Seq[DatabaseField] = {
-    clazz match {
-      case Some(c) => {
-        if (c == null)
-          Seq[DatabaseField]()
-        else
-          c.getDeclaredFields ++ fields(Some(c.getSuperclass))
-      }
-      case None    => Seq[DatabaseField]()
+  def fields(clazz: Option[DatabaseClass]): Option[Seq[DatabaseField]] = {
+    def helper(clazz: DatabaseClass): Seq[DatabaseField] = {
+      if (clazz == null)
+        Seq[DatabaseField]()
+      else
+        clazz.getDeclaredFields ++ helper(clazz.getSuperclass)
     }
+    
+    clazz map { c => helper(c) }
   }
 
+  def getFields(clazz: DatabaseClass): Option[Seq[DatabaseField]] = {
+    def helper(clazz: DatabaseClass): Seq[DatabaseField] = {
+      if (clazz == null)
+        Seq[DatabaseField]()
+      else
+        clazz.getDeclaredFields ++ helper(clazz.getSuperclass)
+    }
+    
+    if (clazz == null) None
+    else Some(helper(clazz))
+  }
+  
   def getAllInstances(id: Long, clsName: String): Seq[Long] = {
     val dao = Global.getSession(id)
     
@@ -135,8 +141,9 @@ object VjpaDAO {
     val lst = vem map { _.find(List(loid).asJava) }
     val obj = lst map { l => if (l.size >= 1) l.get(0) }
     val dbo = obj map { _.asInstanceOf[DatabaseObject] }
+    val res = dbo flatMap { o => if (o == null) None else Some(o) }
     
-    dbo
+    res
   }
   
   def excuteQuery(id: Long, jpql: String): Try[Seq[Long]] = {
@@ -166,10 +173,11 @@ object VjpaDAO {
   
   def fieldNamesforClass(id: Long, clsName: String) = {
     val clazz    = getClass(id, clsName)
-    val flds     = fields(clazz)
-    val fldNames = flds map { fld => fld.getName }
     
-    fldNames
+    for {
+      flds <- fields(clazz)
+      names = flds map { _.getName }
+    } yield names
   }
   
   def addLoids(id: Long, loids: Seq[Long]) = {

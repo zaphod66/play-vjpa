@@ -59,7 +59,10 @@ object VjpaDatabase extends Controller {
   def connected = Action { implicit request =>
     val session = request.session.get("sessionId")
     
-    val dbsNames = session map { s => VjpaDAO.allDBNames(s.toLong) }
+    val dbsNames = for {
+      id  <- session
+      dbs <- VjpaDAO.allDBNames(id.toLong)
+    } yield dbs
     
     Ok(views.html.openDatabase(dbsNames.getOrElse(Seq[String]())))
   }

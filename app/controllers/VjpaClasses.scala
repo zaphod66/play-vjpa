@@ -20,25 +20,31 @@ import scala.collection.JavaConverters._
 object Classes extends Controller {
   def showClass(clsName: String) = Action { implicit request =>
     val session = request.session.get("sessionId")
+
+    val clsFlds = for {
+      id <- session
+      clazz <- VjpaDAO.getClass(id.toLong, clsName)
+      flds  <- VjpaDAO.getFields(clazz)
+    } yield (clazz,flds)
     
-    val clazz = (session map { id => VjpaDAO.getClass(id.toLong, clsName) }).getOrElse(None)
-    val flds = VjpaDAO.fields(clazz)
-    
-    clazz match {
-      case Some(cls) => Ok(views.html.classes.classdetails(cls, flds))
-      case None      => Redirect(routes.Application.index)
+    clsFlds match {
+      case Some((cls, flds)) => Ok(views.html.classes.classdetails(cls, flds))
+      case None              => Redirect(routes.Application.index)
     }
   }
   
   def listAllNames = Action { implicit request =>
     val session = request.session.get("sessionId")
     
-    val clsNames = (session map { id => VjpaDAO.allClassNames(id.toLong) }).getOrElse(None)
-    val dbsNames = (session map { id => VjpaDAO.allDBNames(id.toLong) }).getOrElse(Seq[String]())
+    val names = for {
+      id <- session
+      dbNames <- VjpaDAO.allDBNames(id.toLong)
+      clsNames <- VjpaDAO.allClassNames(id.toLong)
+    } yield (dbNames, clsNames)
     
-    clsNames match {
-      case Some(names) => Ok(views.html.classes.classnames(dbsNames,names))
-      case None        => Redirect(routes.Application.index)
+    names match {
+      case Some((dbs, cls)) => Ok(views.html.classes.classnames(dbs,cls))
+      case None             => Redirect(routes.Application.index)
     }
   }
   
@@ -111,30 +117,66 @@ object Classes extends Controller {
     }
   }
   
+//  def showInstance(loid: Long) = Action { implicit request =>
+//    Logger.logger.info(s"showInstance($loid)")
+//    
+//    val session = request.session.get("sessionId")
+//
+//    val obj = (session map { id => VjpaDAO.getInstance(id.toLong,loid) }).getOrElse(None)
+//
+//    obj match {
+//      case Some(o) => {
+//        if (o != null) {
+//          val flds = VjpaDAO.getFields(o.getType)  // fields
+//          
+//          val clsFlds = for {
+//            fs <- flds
+//            ts  = fs map { _.get(o) }
+//            vs  = ts map { _.asInstanceOf[com.versant.jpa.generic.DatabaseField] }
+//            ss  = vs map { val2String(_) }
+//          } yield vs.zip(ss)
+//          
+//          clsFlds match {
+//            case Some(fs) => Ok(views.html.classes.classinstance(o, fs))
+//            case None     => Redirect(routes.Application.index)
+//          }
+//        } else {
+//          Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) + ("error" -> s"loid not found: $loid")))
+//        }
+//      }
+//      case None    => Redirect(routes.Application.index)
+//    }
+//  }
+
   def showInstance(loid: Long) = Action { implicit request =>
     Logger.logger.info(s"showInstance($loid)")
     
     val session = request.session.get("sessionId")
 
-    val obj = (session map { id => VjpaDAO.getInstance(id.toLong,loid) }).getOrElse(None)
+    val obj = for {
+      id <- session
+      obj <- VjpaDAO.getInstance(id.toLong, loid)
+    } yield obj
 
-    obj match {
-      case Some(o) => {
-        if (o != null) {
-          val flds = VjpaDAO.fields(Some(o.getType))  // fields
-
-          val fs = for {
-            f <- flds
-            v = f.get(o)
-            s = val2String(v)
-          } yield(f, s)
-
-          Ok(views.html.classes.classinstance(o, fs))
-        } else {
+    val desc = for {
+      o <- obj
+      flds <- VjpaDAO.getFields(o.getType)
+      fs = for {
+        f <- flds
+        v = f.get(o)
+        s = val2String(v)
+      } yield (f, s)
+    } yield fs
+    
+    val inst = for {
+      o <- obj
+      d <- desc
+    } yield (o, d)
+    
+    inst match {
+      case Some((o,fs)) => Ok(views.html.classes.classinstance(o, fs))
+      case None         => // Redirect(routes.Application.index)
           Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) + ("error" -> s"loid not found: $loid")))
-        }
-      }
-      case None    => Redirect(routes.Application.index)
     }
   }
 
