@@ -70,7 +70,7 @@ object Classes extends Controller {
     val link  = s"""<a href="$route">$clsName</a>"""
     val redir = routes.Classes.allInstancesPage _
 
-    showInstancesPageCached(Messages("class.result"), link, page, redir, request)
+    showInstancesPageCached(clsName, link, page, redir, request)
   }
   
   def jpqlInstancesPage(query: String, page: Int) = Action { implicit request =>
@@ -78,7 +78,7 @@ object Classes extends Controller {
     val link    = s"""<a href="$route">${query}</a>"""
     val redir   = routes.Classes.jpqlInstancesPage _
     
-    showInstancesPageCached(Messages("query.result"), link, page, redir, request)
+    showInstancesPageCached(query, link, page, redir, request)
   }
 
   def showInstancesPageCached(title: String, link: String, page: Int, redir: (String, Int) => Call, request: Request[AnyContent]) = {
