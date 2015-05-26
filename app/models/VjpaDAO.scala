@@ -86,16 +86,16 @@ object VjpaDAO {
     dao map { d => DatabaseClass.forName(clsName, d.emf) }
   }
   
-  def fields(clazz: Option[DatabaseClass]): Option[Seq[DatabaseField]] = {
-    def helper(clazz: DatabaseClass): Seq[DatabaseField] = {
-      if (clazz == null)
-        Seq[DatabaseField]()
-      else
-        clazz.getDeclaredFields ++ helper(clazz.getSuperclass)
-    }
-    
-    clazz map { c => helper(c) }
-  }
+//  def fields(clazz: Option[DatabaseClass]): Option[Seq[DatabaseField]] = {
+//    def helper(clazz: DatabaseClass): Seq[DatabaseField] = {
+//      if (clazz == null)
+//        Seq[DatabaseField]()
+//      else
+//        clazz.getDeclaredFields ++ helper(clazz.getSuperclass)
+//    }
+//    
+//    clazz map { c => helper(c) }
+//  }
 
   def getFields(clazz: DatabaseClass): Option[Seq[DatabaseField]] = {
     def helper(clazz: DatabaseClass): Seq[DatabaseField] = {
@@ -149,10 +149,8 @@ object VjpaDAO {
   def excuteQuery(id: Long, jpql: String): Try[Seq[Long]] = {
     val dao = Global.getSession(id)
     
-    var query: Option[Query] = None
-    
     try {
-      query = dao map { d => d.em.createQuery(jpql) }
+      val query = dao map { d => d.em.createQuery(jpql) }
     
       val oloids = for {
         q <- query
@@ -175,7 +173,8 @@ object VjpaDAO {
     val clazz    = getClass(id, clsName)
     
     for {
-      flds <- fields(clazz)
+      cls <- clazz
+      flds <- getFields(cls)
       names = flds map { _.getName }
     } yield names
   }

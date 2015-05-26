@@ -117,37 +117,6 @@ object Classes extends Controller {
     }
   }
   
-//  def showInstance(loid: Long) = Action { implicit request =>
-//    Logger.logger.info(s"showInstance($loid)")
-//    
-//    val session = request.session.get("sessionId")
-//
-//    val obj = (session map { id => VjpaDAO.getInstance(id.toLong,loid) }).getOrElse(None)
-//
-//    obj match {
-//      case Some(o) => {
-//        if (o != null) {
-//          val flds = VjpaDAO.getFields(o.getType)  // fields
-//          
-//          val clsFlds = for {
-//            fs <- flds
-//            ts  = fs map { _.get(o) }
-//            vs  = ts map { _.asInstanceOf[com.versant.jpa.generic.DatabaseField] }
-//            ss  = vs map { val2String(_) }
-//          } yield vs.zip(ss)
-//          
-//          clsFlds match {
-//            case Some(fs) => Ok(views.html.classes.classinstance(o, fs))
-//            case None     => Redirect(routes.Application.index)
-//          }
-//        } else {
-//          Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) + ("error" -> s"loid not found: $loid")))
-//        }
-//      }
-//      case None    => Redirect(routes.Application.index)
-//    }
-//  }
-
   def showInstance(loid: Long) = Action { implicit request =>
     Logger.logger.info(s"showInstance($loid)")
     
@@ -175,8 +144,8 @@ object Classes extends Controller {
     
     inst match {
       case Some((o,fs)) => Ok(views.html.classes.classinstance(o, fs))
-      case None         => // Redirect(routes.Application.index)
-          Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) + ("error" -> s"loid not found: $loid")))
+      case None         => Redirect(routes.Classes.requestLoid).flashing(Flash(Map("loid" -> loid.toString) +
+                                                                                  ("error" -> s"loid not found: $loid")))
     }
   }
 
@@ -229,8 +198,7 @@ object Classes extends Controller {
           Logger.logger.info(s"executing JPQL: ${s.str}")
 
           val session = request.session.get("sessionId")
-          val oloids  = executeJpql(session, s.str)
-          val loids   = oloids.getOrElse(Failure(new Exception("no results found")))
+          val loids  = executeJpql(session, s.str)
 
           loids match {
             case Success(ls) => { if (ls.length > 100) {
@@ -258,7 +226,10 @@ object Classes extends Controller {
       _ = sort map { VjpaDAO.addLoids(id.toLong, _) }
     } yield sort
     
-    loids
+    loids match {
+      case Some(l) => l
+      case None    => Failure(new Exception("no results found"))
+    }
   }
   
   def val2String(v: Object): String = {
